@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    // File Layout
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    // Environment Settings - UPDATED for Node.js
+    "module": "commonjs",
+    "target": "ES2020",  // Changed from esnext to ES2020 for better Node.js compatibility
+    "lib": ["ES2020"],   // Added lib for Node.js
+    "types": ["node"],   // Added node types
+    
+    // Module Resolution - ADDED
+    "moduleResolution": "node",
+
+    // Other Outputs
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    // Stricter Typechecking Options
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": false,  // Changed to false - can cause issues with optional props
+
+    // Recommended Options
+    "strict": true,
+    // "jsx": "react-jsx",  // REMOVED - not needed for backend
+    // "verbatimModuleSyntax": true,  // REMOVED - can cause import issues
+    "isolatedModules": true,
+    // "noUncheckedSideEffectImports": true,  // REMOVED - too strict for backend
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]  // Added dist to exclude
+}
