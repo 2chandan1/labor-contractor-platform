@@ -1,15 +1,18 @@
-import './App.css'
-import Button from '@mui/material/Button';
-function App() {
-  return (
-    <>
-     <Button variant="text">Text</Button>
-     <div className='m-4'>
-      <Button variant="outlined" className='m-4 p-4'>Outlined</Button>
-     </div>
-     <Button variant="contained" className='pt-4 p-6'>Contained</Button>
-    </>
-  )
-}
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
 
-export default App
+const App: React.FC = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;
