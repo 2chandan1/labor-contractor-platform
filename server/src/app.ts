@@ -21,7 +21,7 @@ app.get('/', (req: Request, res: Response) => {
 app.get('/api/health', (req: Request, res: Response) => {
   res.json({
     success: true,
-    message: 'API is healthy',
+    message: 'API is healthy for labours',
     uptime: process.uptime()
   });
 });
