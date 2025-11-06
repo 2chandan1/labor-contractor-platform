@@ -5,6 +5,7 @@ import type React from "react";
 export type CustomTextFieldProps = Omit<TextFieldProps, "onChange" | "value"> & {
   label?: string;
   value?: string | number;
+  error?: string; 
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   fullWidth?: boolean;
   children?: React.ReactNode;
@@ -15,6 +16,7 @@ export default function CustomTextField({
   value,
   onChange,
   type = "text",
+  error,
   fullWidth = true,
   size = "medium",
   margin = "dense",
@@ -31,6 +33,8 @@ export default function CustomTextField({
       value={value}
       onChange={onChange}
       type={type}
+      error={Boolean(error)} // Convert string to boolean
+      helperText={error || ''} 
       fullWidth={fullWidth}
       size={size}
       margin={margin}

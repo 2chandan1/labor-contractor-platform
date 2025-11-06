@@ -1,35 +1,111 @@
-import React, { useState } from "react";
-import AuthHeader from "../../components/auth/AuthHeader";
-import MobileInput from "../../components/auth/MobileInput";
-import OtpInput from "../../components/auth/OtpInput";
+import { Box, Paper, Typography, Divider } from "@mui/material";
 import { Link } from "react-router-dom";
+import  { Toaster } from "react-hot-toast";
+import z from "zod";
+import MobileInput from "../../components/auth/MobileInput";
+import OTPVerification from "../../components/auth/OtpInput";
+import { useAuthForm } from "../../hooks/useAuth";
 
-const Login: React.FC = () => {
-  const [step, setStep] = useState<number>(1);
+// ✅ Validation schema
+const mobileSchema = z.object({
+  mobile: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
+});
+interface FormData {
+  mobile: string;
+}
 
-  const handleSendOtp = () => setStep(2);
-  const handleVerifyOtp = () => alert("Logged in successfully!");
-  const handleResend = () => alert("OTP Resent!");
+const initialFormData: FormData = { mobile: "" };
 
+export default function Login () {
+    const {
+    step,
+    formData,
+    errors,
+    handleChange,
+    handleSendOtp,
+    handleResendOtp,
+    handleOtpVerified,
+    handleBackToForm,
+  } = useAuthForm({
+    initialData: initialFormData,
+    validationSchema: mobileSchema,
+    isLogin: true,
+  });
+
+  // ✅ UI
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gray-50">
-      <AuthHeader title="Login" subtitle="Welcome back!" />
-      <div className="mt-10 w-full flex justify-center px-4">
-        {step === 1 ? (
-          <MobileInput onSendOtp={handleSendOtp} />
-        ) : (
-          <OtpInput onVerifyOtp={handleVerifyOtp} onResend={handleResend} />
-        )}
-      </div>
+    <Box
+      sx={{
+        bgcolor: "grey.50",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        p: 2,
+      }}
+    >
+      <Toaster position="top-center" />
+      {step === "login" && (
+        <>
+          <Paper
+            elevation={8}
+            sx={{
+              p: 5,
+              width: "100%",
+              maxWidth: 420,
+              borderRadius: 4,
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="h4" fontWeight={600} mb={1}>
+              Welcome Back!
+            </Typography>
+            <Typography variant="body1" color="text.secondary" mb={3}>
+              Login to your account
+            </Typography>
 
-      <p className="mt-6 text-sm text-gray-600">
-        Don’t have an account?{" "}
-        <Link to="/register" className="text-blue-600 hover:underline">
-          Register here
-        </Link>
-      </p>
-    </div>
+            <Typography variant="h6" color="text.secondary" mb={3}>
+              Please enter your mobile number
+            </Typography>
+            <MobileInput
+              value={formData.mobile}
+              onChange={handleChange}
+              onSendOtp={handleSendOtp}
+              label="Mobile Number"
+              error={errors.mobile}
+            />
+          </Paper>
+          <Divider sx={{ my: 4 }} />
+
+          <Typography variant="body2" color="text.secondary">
+            Don’t have an account?{" "}
+            <Link to="/register" style={{ color: "#1976d2", fontWeight: 500 }}>
+              Register here
+            </Link>
+          </Typography>
+        </>
+      )}
+      {step === "otp" && (
+        <>
+          <Typography variant="h4" fontWeight={600} mb={1}>
+            Verify OTP
+          </Typography>
+          <Typography variant="body1" color="text.secondary" mb={3}>
+            Enter the 6-digit code sent to{" "}
+            <Typography component="span" fontWeight={600} color="text.primary">
+              +91 {formData.mobile}
+            </Typography>
+          </Typography>
+
+          <OTPVerification
+            mobileNumber={formData.mobile}
+            onVerifySuccess={handleOtpVerified}
+            onResendOtp={handleResendOtp}
+            onBack={handleBackToForm}
+          />
+        </>
+      )}
+
+    </Box>
   );
 };
-
-export default Login;
