@@ -14,7 +14,7 @@ import { useOtpTimer } from "../../hooks/useOtpTimer";
 
 interface OTPVerificationProps {
   mobileNumber: string;
-  userType?: "labour" | "constructors";
+  userType?: "labour" | "constructor";
   onVerifySuccess: (token: string) => void;
   onResendOtp: () => Promise<void>;
   onBack?: () => void;
