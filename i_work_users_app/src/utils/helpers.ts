@@ -36,7 +36,24 @@ export const storage = {
     }
   },
 };
-
+export const isValidOtp = (otp: string[]): boolean => {
+  return otp.join("").length === 6 && otp.every(digit => /^\d$/.test(digit));
+};
+export const isOtpComplete = (otp: string[]): boolean => {
+  return otp.join("").length === 6;
+};
+export const clearOtp = (): string[] => {
+  return ["", "", "", "", "", ""];
+};
+// ✅ Parse pasted OTP
+export const parsePastedOtp = (pastedText: string): string[] => {
+  const cleaned = pastedText.slice(0, 6);
+  if (!/^\d+$/.test(cleaned)) return [];
+  
+  const otpArray = cleaned.split("");
+  while (otpArray.length < 6) otpArray.push("");
+  return otpArray;
+};
 // Format Phone Number
 export const formatPhoneNumber = (phone: string): string => {
   const cleaned = phone.replace(/\D/g, '');
@@ -66,7 +83,11 @@ export const formatCurrency = (amount: number): string => {
     maximumFractionDigits: 0,
   }).format(amount);
 };
-
+export const formatTime = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+};
 // Format Date
 export const formatDate = (date: Date | string): string => {
   return new Date(date).toLocaleDateString('en-IN', {

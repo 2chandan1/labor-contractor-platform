@@ -1,30 +1,36 @@
 import React from "react";
-import { TextField, Button } from "@mui/material";
-
+import CustomButton from "../ui/CustomButton";
+import CustomTextField from "../ui/CustomTextField";
+import { InputAdornment, Box } from "@mui/material";
 interface MobileInputProps {
-  onSendOtp: () => void;
   label?: string;
+  value: string;
+  error?: string; 
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onSendOtp: () => void;
 }
 
-const MobileInput: React.FC<MobileInputProps> = ({ onSendOtp, label = "Mobile Number" }) => {
+export default function MobileInput({
+  label = "Mobile Number",
+  value,
+  onChange,
+  onSendOtp,
+  error
+}: MobileInputProps) {
   return (
-    <div className="flex flex-col items-center gap-4 w-full max-w-sm ">
-      <TextField
+     <Box display="flex" flexDirection="column" alignItems="center" gap={2} width="100%">
+      <CustomTextField
         label={label}
-        variant="outlined"
-        fullWidth
-       
+        name="mobile"
+        value={value}
+        type="text"
+        error={error}
+        onChange={onChange}
+        InputProps={{
+          startAdornment: <InputAdornment position="start">+91</InputAdornment>,
+        }}
       />
-      <Button
-        variant="contained"
-        color="primary"
-        className="w-full"
-        onClick={onSendOtp}
-      >
-        Send OTP
-      </Button>
-    </div>
+      <CustomButton label="Send OTP" color="success" onClick={onSendOtp} />
+    </Box>
   );
-};
-
-export default MobileInput;
+}
