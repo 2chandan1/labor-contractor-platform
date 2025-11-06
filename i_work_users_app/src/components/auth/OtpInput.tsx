@@ -1,5 +1,6 @@
 import React from "react";
 import { TextField, Button } from "@mui/material";
+import CustomButton from "../ui/CustomButton";
 
 interface OtpInputProps {
   onVerifyOtp: () => void;
@@ -15,14 +16,9 @@ const OtpInput: React.FC<OtpInputProps> = ({ onVerifyOtp, onResend }) => {
         fullWidth
         inputProps={{ maxLength: 6 }}
       />
-      <Button
-        variant="contained"
-        color="primary"
-        className="w-full"
-        onClick={onVerifyOtp}
-      >
-        Verify OTP
-      </Button>
+      <CustomButton label=" Verify OTP" onClick={onVerifyOtp}/>
+      
+       
       <Button variant="text" onClick={onResend}>
         Resend OTP
       </Button>
