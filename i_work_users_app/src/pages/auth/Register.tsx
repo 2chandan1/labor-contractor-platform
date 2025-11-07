@@ -1,9 +1,6 @@
 import { useState } from "react";
-import type {  SyntheticEvent } from "react";
 import { z } from "zod";
 import {
-  Tabs,
-  Tab,
   MenuItem,
   Box,
   Paper,
@@ -11,7 +8,7 @@ import {
   Stack,
   Divider,
 } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import { Link,useParams  } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import CustomTextField from "../../components/ui/CustomTextField";
 import MobileInput from "../../components/auth/MobileInput";
@@ -19,7 +16,7 @@ import OTPVerification from "../../components/auth/OtpInput";
 import { useAuthForm } from "../../hooks/useAuth";
 
 
-type TabType = "labour" | "constructors";
+type RoleType = "labour" | "constructors";
 
 interface FormData {
   name: string;
@@ -115,10 +112,11 @@ const constructorFields: Field[] = [
 
 export default function Register() {
 
-  const navigate = useNavigate();
-  
+ 
+   const { role } = useParams<{ role: RoleType }>();
+  const activeRole = role === "constructor" ? "constructor" : "labour";
   // State Management
-  const [activeTab, setActiveTab] = useState<TabType>("labour");
+
  const {
     step,
     formData,
@@ -134,34 +132,31 @@ export default function Register() {
     resetForm,
   } = useAuthForm({
     initialData: initialFormData,
-    validationSchema: activeTab === "labour" ? labourSchema : constructorSchema,
-    userRole: activeTab,
+    validationSchema: activeRole === "labour" ? labourSchema : constructorSchema,
+    userRole: activeRole,
     isLogin: false,
   });
   // Get current fields based on active tab
-  const currentFields = activeTab === "labour" ? labourFields : constructorFields;
-
-  // Handle tab change
-  const handleTabChange = (_: SyntheticEvent, newValue: TabType) => {
-    // Ask for confirmation if form has data
-    const hasData = Object.values(formData).some((val) => val !== "");
+ 
+  const currentFields = activeRole === "labour" ? labourFields : constructorFields;
+  // const handleTabChange = (_: SyntheticEvent, newValue: TabType) => {
+  //   // Ask for confirmation if form has data
+  //   const hasData = Object.values(formData).some((val) => val !== "");
     
-    if (hasData) {
-      const confirmed = window.confirm(
-        "Switching tabs will clear your form data. Continue?"
-      );
-      if (!confirmed) return;
-    }
+  //   if (hasData) {
+  //     const confirmed = window.confirm(
+  //       "Switching tabs will clear your form data. Continue?"
+  //     );
+  //     if (!confirmed) return;
+  //   }
 
-    setActiveTab(newValue);
-    setFormData(initialFormData);
-    setErrors({});
-    setStep("form");
-    resetForm;
-  };
-
-
-
+  //   setActiveTab(newValue);
+  //   setFormData(initialFormData);
+  //   setErrors({});
+  //   setStep("form");
+  //   resetForm;
+  // };
+  // Handle tab change
   return (
     <Box
       sx={{
@@ -184,10 +179,8 @@ export default function Register() {
             Register
           </Typography>
           <Typography variant="body1" color="text.secondary" mb={3}>
-            Create your account as{" "}
-            <Typography component="span" fontWeight={600} color="text.primary">
-              {activeTab === "labour" ? "Labour" : "Constructor"}
-            </Typography>
+            Create your account as {activeRole === "labour" ? "Labour" : "Constructor"}
+            
           </Typography>
 
           <Paper
@@ -200,7 +193,7 @@ export default function Register() {
               backdropFilter: "blur(8px)",
             }}
           >
-            <Tabs
+            {/* <Tabs
               value={activeTab}
               onChange={handleTabChange}
               variant="fullWidth"
@@ -209,7 +202,7 @@ export default function Register() {
             >
               <Tab value="labour" label="Labour" />
               <Tab value="constructors" label="Constructor" />
-            </Tabs>
+            </Tabs> */}
 
             <Divider />
 
@@ -277,7 +270,7 @@ export default function Register() {
 
           <OTPVerification
             mobileNumber={formData.mobile}
-            userType={activeTab}
+            userType={activeRole}
             onVerifySuccess={handleOtpVerified}
             onResendOtp={handleResendOtp}
             onBack={handleBackToForm}
