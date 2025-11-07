@@ -1,55 +1,52 @@
+import { useState } from "react";
+import { Index } from "./pages/Index";
+import { Register } from "./pages/auth/Register";
+import {Login} from "./pages/auth/Login";
 
-// import React from "react";
-// import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-// import Login from "./pages/auth/Login";
-// import Register from "./pages/auth/Register";
-// import MainLayout from "./layout/MainLayout";
-// import EmployerDashboard from "./pages/employer/Dashboard";
-// import EmployeeDashboard from "./pages/employee/Dashboard";
+export default function App() {
+  const [currentPage, setCurrentPage] = useState('login'); // Start with 'login'
+  const [selectedUserType, setSelectedUserType] = useState(null); // 'labour' or 'contractor'
 
-// const App: React.FC = () => {
-//   return (
-//     <Router>
-//       <Routes>
-//         <Route element={<MainLayout />}>
-//         <Route path="/" element={<Navigate to="/login" replace />} />
-//         <Route path="/login" element={<Login />} />
-//         <Route path="/register" element={<Register />} />
-//         <Route path="/employer/dashboard" element={<EmployerDashboard/>}/>
-//         <Route path="/employee/dashboard" element={<EmployeeDashboard/>}/>
-//         </Route>
-//       </Routes>
-//     </Router>
-//   );
-// };
+  // Navigate to Index (selection page) from Login
+  const handleNavigateToSignup = () => {
+    setCurrentPage('index');
+  };
 
-// export default App;
+  // Navigate to Register after selecting user type
+  const handleSelect = (type) => {
+    setSelectedUserType(type);
+    setCurrentPage('register');
+  };
 
-import { Toaster } from "./components/ui/toaster";
-import { Toaster as Sonner } from "./components/ui/sonner";
-import { TooltipProvider } from "./components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
+  // Go back from Register to Index
+  const handleBackToSelection = () => {
+    setCurrentPage('index');
+    setSelectedUserType(null);
+  };
 
-const queryClient = new QueryClient();
+  // Go back from Index to Login
+  const handleBackToLogin = () => {
+    setCurrentPage('login');
+    setSelectedUserType(null);
+  };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
-
-
-export default App;
+  return (
+    <>
+      {currentPage === 'login' && (
+        <Login onNavigateToSignup={handleNavigateToSignup} />
+      )}
+      {currentPage === 'index' && (
+        <Index 
+          onSelect={handleSelect} 
+          onNavigateToLogin={handleBackToLogin} 
+        />
+      )}
+      {currentPage === 'register' && (
+        <Register 
+          userType={selectedUserType} 
+          onBack={handleBackToSelection} 
+        />
+      )}
+    </>
+  );
+}

@@ -1,282 +1,182 @@
-import { useState } from "react";
-import { z } from "zod";
-import {
-  MenuItem,
-  Box,
-  Paper,
-  Typography,
-  Stack,
-  Divider,
-} from "@mui/material";
-import { Link,useParams  } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
-import CustomTextField from "../../components/ui/CustomTextField";
-import MobileInput from "../../components/auth/MobileInput";
-import OTPVerification from "../../components/auth/OtpInput";
-import { useAuthForm } from "../../hooks/useAuth";
-
-
-type RoleType = "labour" | "constructors";
-
-interface FormData {
-  name: string;
-  age: string;
-  gender: string;
-  experience: string;
-  location: string;
-  companyName: string;
-  companyAddress: string;
-  mobile: string;
-}
-
-interface BaseField {
-  label: string;
-  name: keyof FormData;
-  type?: string;
-}
-
-interface SelectField extends BaseField {
-  select: true;
-  options: { value: string; label: string }[];
-}
-
-type Field = BaseField | SelectField;
-
-const isSelectField = (field: Field): field is SelectField => "select" in field;
-
-const initialFormData: FormData = {
-  name: "",
-  age: "",
-  gender: "",
-  experience: "",
-  location: "",
-  companyName: "",
-  companyAddress: "",
-  mobile: "",
-};
-
-// Validation Schemas
-const labourSchema = z.object({
-  name: z.string().min(1, "Please enter your name"),
-  age: z
-    .string()
-    .min(1, "Please enter your age")
-    .refine(
-      (val) => !isNaN(Number(val)) && Number(val) > 17 && Number(val) < 56,
-      "Enter a valid age between 18 - 55"
-    ),
-  gender: z.string().min(1, "Please select gender"),
-  mobile: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
-  experience: z.string().min(1, "Please enter your experience"),
-  location: z.string().min(1, "Please enter your location"),
-});
-
-const constructorSchema = z.object({
-  name: z.string().min(1, "Please enter your name"),
-  age: z
-    .string()
-    .min(1, "Please enter your age")
-    .refine(
-      (val) => !isNaN(Number(val)) && Number(val) > 17 && Number(val) < 56,
-      "Enter a valid age between 18 - 55"
-    ),
-  companyName: z.string().min(1, "Please enter company name"),
-  companyAddress: z.string().min(1, "Please enter company address"),
-  mobile: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
-});
-
-// Field Configurations
-const labourFields: Field[] = [
-  { label: "Full Name", name: "name" },
-  { label: "Age", name: "age", type: "number" },
-  {
-    label: "Gender",
-    name: "gender",
-    select: true,
-    options: [
-      { value: "male", label: "Male" },
-      { value: "female", label: "Female" },
-      { value: "other", label: "Other" },
-    ],
-  },
-  { label: "Experience (in years)", name: "experience", type: "number" },
-  { label: "Location", name: "location" },
-];
-
-const constructorFields: Field[] = [
-  { label: "Full Name", name: "name" },
-  { label: "Age", name: "age", type: "number" },
-  { label: "Company Name", name: "companyName" },
-  { label: "Company Address", name: "companyAddress" },
-];
-
-export default function Register() {
-
- 
-   const { role } = useParams<{ role: RoleType }>();
-  const activeRole = role === "constructor" ? "constructor" : "labour";
-  // State Management
-
- const {
-    step,
-    formData,
-    errors,
-    setFormData,
-    setErrors,
-    setStep,
-    handleChange,
-    handleSendOtp,
-    handleResendOtp,
-    handleOtpVerified,
-    handleBackToForm,
-    resetForm,
-  } = useAuthForm({
-    initialData: initialFormData,
-    validationSchema: activeRole === "labour" ? labourSchema : constructorSchema,
-    userRole: activeRole,
-    isLogin: false,
+import React, { useState } from 'react';
+import { Users, Briefcase, ChevronRight, ArrowLeft, CheckCircle2, ArrowRight } from "lucide-react";
+export function Register({ userType, onBack }) {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    age: '',
+    gender: '',
+    experience: '',
+    location: '',
+    mobile: '+91'
   });
-  // Get current fields based on active tab
- 
-  const currentFields = activeRole === "labour" ? labourFields : constructorFields;
-  // const handleTabChange = (_: SyntheticEvent, newValue: TabType) => {
-  //   // Ask for confirmation if form has data
-  //   const hasData = Object.values(formData).some((val) => val !== "");
-    
-  //   if (hasData) {
-  //     const confirmed = window.confirm(
-  //       "Switching tabs will clear your form data. Continue?"
-  //     );
-  //     if (!confirmed) return;
-  //   }
 
-  //   setActiveTab(newValue);
-  //   setFormData(initialFormData);
-  //   setErrors({});
-  //   setStep("form");
-  //   resetForm;
-  // };
-  // Handle tab change
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Form submitted:', formData);
+    alert('OTP sent successfully!');
+  };
+
+  const isLabour = userType === 'labour';
+  const iconBgColor = isLabour ? 'bg-blue-500' : 'bg-purple-500';
+  const buttonColor = isLabour ? 'bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/50' : 'bg-purple-600 hover:bg-purple-700 hover:shadow-purple-500/50';
+  const ringColor = isLabour ? 'focus:ring-blue-500' : 'focus:ring-purple-500';
+
   return (
-    <Box
-      sx={{
-        
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        bgcolor: "grey.50",
-        py: 6,
-        px: 2,
-      }}
-    >
-      <Toaster position="top-center" reverseOrder={false} />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl">
+        {/* Back Button */}
+        <button 
+          onClick={onBack}
+          className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors mb-8"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span className="text-lg">Back</span>
+        </button>
 
-      {/* Registration Form Step */}
-      {step === "form" && (
-        <>
-          <Typography variant="h4" fontWeight={600} mb={1}>
-            Register
-          </Typography>
-          <Typography variant="body1" color="text.secondary" mb={3}>
-            Create your account as {activeRole === "labour" ? "Labour" : "Constructor"}
-            
-          </Typography>
+        {/* Register Card */}
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-slate-700/50">
+          {/* Header */}
+          <div className="flex flex-col items-center mb-10">
+            <div className={`w-16 h-16 ${iconBgColor} rounded-full flex items-center justify-center mb-4`}>
+              <CheckCircle2 className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+              Join as {isLabour ? 'Labour' : 'Contractor'}
+            </h1>
+            <p className="text-gray-400 text-center">
+              Build your professional profile and connect with opportunities
+            </p>
+          </div>
 
-          <Paper
-            elevation={6}
-            sx={{
-              width: "100%",
-              maxWidth: 420,
-              borderRadius: 4,
-              overflow: "hidden",
-              backdropFilter: "blur(8px)",
-            }}
-          >
-            {/* <Tabs
-              value={activeTab}
-              onChange={handleTabChange}
-              variant="fullWidth"
-              indicatorColor="primary"
-              textColor="primary"
-            >
-              <Tab value="labour" label="Labour" />
-              <Tab value="constructors" label="Constructor" />
-            </Tabs> */}
-
-            <Divider />
-
-            <Box sx={{ p: 4 }}>
-              <Stack spacing={2.5}>
-                {currentFields.map((field) => (
-                  <CustomTextField
-                    key={field.name}
-                    label={field.label}
-                    name={field.name}
-                    type={field.type || "text"}
-                    select={isSelectField(field)}
-                    value={formData[field.name as keyof FormData]}
-                    onChange={handleChange}
-                    error={errors[field.name]}
-                  >
-                    {isSelectField(field) &&
-                      field.options.map((opt) => (
-                        <MenuItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </MenuItem>
-                      ))}
-                  </CustomTextField>
-                ))}
-                
-                <MobileInput
-                  value={formData.mobile}
-                  onChange={handleChange}
-                  onSendOtp={handleSendOtp}
-                  label="Mobile Number"
-                  error={errors.mobile}
+          {/* Register Inputs */}
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Full Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleInputChange}
+                  placeholder="John Doe"
+                  className={`w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${ringColor} focus:border-transparent transition-all`}
                 />
-              </Stack>
-            </Box>
-          </Paper>
+              </div>
 
-          <Typography variant="body2" color="text.secondary" mt={3}>
-            Already have an account?{" "}
-            <Link
-              to="/login"
-              style={{
-                color: "#1976d2",
-                textDecoration: "none",
-                fontWeight: 500,
-              }}
+              {/* Age */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Age
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    name="age"
+                    value={formData.age}
+                    onChange={handleInputChange}
+                    placeholder="28"
+                    className={`w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${ringColor} focus:border-transparent transition-all`}
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <div className="w-6 h-6 bg-slate-600 rounded flex items-center justify-center">
+                      <span className="text-gray-400 text-xs">▼</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Gender */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Gender
+                </label>
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-gray-400 focus:outline-none focus:ring-2 ${ringColor} focus:border-transparent transition-all appearance-none cursor-pointer`}
+                >
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              {/* Experience */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Experience (years)
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    name="experience"
+                    value={formData.experience}
+                    onChange={handleInputChange}
+                    placeholder="5"
+                    className={`w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${ringColor} focus:border-transparent transition-all`}
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <div className="w-6 h-6 bg-slate-600 rounded flex items-center justify-center">
+                      <span className="text-gray-400 text-xs">▼</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Location */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                  placeholder="New Delhi"
+                  className={`w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${ringColor} focus:border-transparent transition-all`}
+                />
+              </div>
+
+              {/* Mobile Number */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Mobile Number
+                </label>
+                <input
+                  type="tel"
+                  name="mobile"
+                  value={formData.mobile}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${ringColor} focus:border-transparent transition-all`}
+                />
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              onClick={handleSubmit}
+              className={`w-full ${buttonColor} text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg mt-8`}
             >
-              Login here
-            </Link>
-          </Typography>
-        </>
-      )}
-
-      {/* OTP Verification Step */}
-      {step === "otp" && (
-        <>
-          <Typography variant="h4" fontWeight={600} mb={1}>
-            Verify OTP
-          </Typography>
-          <Typography variant="body1" color="text.secondary" mb={3}>
-            Enter the 6-digit code sent to{" "}
-            <Typography component="span" fontWeight={600} color="text.primary">
-              +91 {formData.mobile}
-            </Typography>
-          </Typography>
-
-          <OTPVerification
-            mobileNumber={formData.mobile}
-            userType={activeRole}
-            onVerifySuccess={handleOtpVerified}
-            onResendOtp={handleResendOtp}
-            onBack={handleBackToForm}
-          />
-        </>
-      )}
-    </Box>
+              <span>Send OTP</span>
+              <ArrowRight className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

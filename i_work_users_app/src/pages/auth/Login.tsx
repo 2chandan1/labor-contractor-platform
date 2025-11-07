@@ -1,111 +1,93 @@
-import { Box, Paper, Typography, Divider } from "@mui/material";
-import { Link } from "react-router-dom";
-import  { Toaster } from "react-hot-toast";
-import z from "zod";
-import MobileInput from "../../components/auth/MobileInput";
-import OTPVerification from "../../components/auth/OtpInput";
-import { useAuthForm } from "../../hooks/useAuth";
+import React, { useState } from 'react';
+import { Phone, ArrowRight } from 'lucide-react';
 
-// ✅ Validation schema
-const mobileSchema = z.object({
-  mobile: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
-});
-interface FormData {
-  mobile: string;
-}
+export function Login({ onNavigateToSignup }) {
+  const [mobileNumber, setMobileNumber] = useState('');
 
-const initialFormData: FormData = { mobile: "" };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Mobile number:', mobileNumber);
+    alert('Continuing with mobile number: ' + mobileNumber);
+  };
 
-export default function Login () {
-    const {
-    step,
-    formData,
-    errors,
-    handleChange,
-    handleSendOtp,
-    handleResendOtp,
-    handleOtpVerified,
-    handleBackToForm,
-  } = useAuthForm({
-    initialData: initialFormData,
-    validationSchema: mobileSchema,
-    isLogin: true,
-  });
-
-  // ✅ UI
   return (
-    <Box
-      sx={{
-        bgcolor: "grey.50",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
-        p: 2,
-      }}
-    >
-      <Toaster position="top-center" />
-      {step === "login" && (
-        <>
-          <Paper
-            elevation={8}
-            sx={{
-              p: 5,
-              width: "100%",
-              maxWidth: 420,
-              borderRadius: 4,
-              textAlign: "center",
-            }}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+      {/* Login Card */}
+      <div className="w-full max-w-md">
+        <div className="bg-slate-800/60 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-slate-700/50">
+          {/* Phone Icon */}
+          <div className="flex justify-center mb-6">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <Phone className="w-10 h-10 text-white" strokeWidth={2.5} />
+            </div>
+          </div>
+
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Welcome Back
+            </h1>
+            <p className="text-gray-400 text-sm">
+              Enter your mobile number to continue
+            </p>
+          </div>
+
+          {/* Input Field */}
+          <div className="mb-6">
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                <Phone className="w-5 h-5 text-gray-400" />
+              </div>
+              <input
+                type="tel"
+                value={mobileNumber}
+                onChange={(e) => setMobileNumber(e.target.value)}
+                placeholder="Enter mobile number"
+                className="w-full pl-12 pr-4 py-4 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              />
+            </div>
+          </div>
+
+          {/* Continue Button */}
+          <button
+            onClick={handleSubmit}
+            className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-blue-500/50 mb-6"
           >
-            <Typography variant="h4" fontWeight={600} mb={1}>
-              Welcome Back!
-            </Typography>
-            <Typography variant="body1" color="text.secondary" mb={3}>
-              Login to your account
-            </Typography>
+            <span>Continue</span>
+            <ArrowRight className="w-5 h-5" />
+          </button>
 
-            <Typography variant="h6" color="text.secondary" mb={3}>
-              Please enter your mobile number
-            </Typography>
-            <MobileInput
-              value={formData.mobile}
-              onChange={handleChange}
-              onSendOtp={handleSendOtp}
-              label="Mobile Number"
-              error={errors.mobile}
-            />
-          </Paper>
-          <Divider sx={{ my: 4 }} />
+          {/* Secure Login Text */}
+          <div className="text-center mb-4">
+            <p className="text-gray-500 text-sm">Secure Login</p>
+          </div>
 
-          <Typography variant="body2" color="text.secondary">
-            Don’t have an account?{" "}
-            <Link to="/register" style={{ color: "#1976d2", fontWeight: 500 }}>
-              Register here
-            </Link>
-          </Typography>
-        </>
-      )}
-      {step === "otp" && (
-        <>
-          <Typography variant="h4" fontWeight={600} mb={1}>
-            Verify OTP
-          </Typography>
-          <Typography variant="body1" color="text.secondary" mb={3}>
-            Enter the 6-digit code sent to{" "}
-            <Typography component="span" fontWeight={600} color="text.primary">
-              +91 {formData.mobile}
-            </Typography>
-          </Typography>
+          {/* Sign Up Link */}
+          <div className="text-center pt-4 border-t border-slate-700">
+            <p className="text-gray-400 text-sm">
+              Don't have an account?{' '}
+              <button 
+                onClick={onNavigateToSignup}
+                className="text-blue-400 hover:text-blue-300 font-semibold underline transition-colors"
+              >
+                Sign Up
+              </button>
+            </p>
+          </div>
+        </div>
 
-          <OTPVerification
-            mobileNumber={formData.mobile}
-            onVerifySuccess={handleOtpVerified}
-            onResendOtp={handleResendOtp}
-            onBack={handleBackToForm}
-          />
-        </>
-      )}
+        {/* Terms Text */}
+        <div className="text-center mt-6">
+          <p className="text-gray-400 text-sm">
+            By continuing, you agree to our{' '}
+            <button className="text-blue-400 hover:text-blue-300 underline">
+              Terms of Service
+            </button>
+          </p>
+        </div>
+      </div>
 
-    </Box>
+      
+    </div>
   );
-};
+}
