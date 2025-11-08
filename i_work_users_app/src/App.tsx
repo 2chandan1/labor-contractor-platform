@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Index } from "./pages/Index";
+import  Index from "./pages/Index";
 import { Register } from "./pages/auth/Register";
 import {Login} from "./pages/auth/Login";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState('login'); // Start with 'login'
+  const [currentPage, setCurrentPage] = useState('index'); // Start with 'login'
   const [selectedUserType, setSelectedUserType] = useState(null); // 'labour' or 'contractor'
 
   // Navigate to Index (selection page) from Login

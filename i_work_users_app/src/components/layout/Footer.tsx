@@ -1,18 +1,9 @@
-import { Box, Typography } from "@mui/material";
+
 
 export default function Footer() {
   return (
-    <Box
-      sx={{
-        mt: 4,
-        py: 2,
-        bgcolor: "grey.200",
-        textAlign: "center",
-      }}
-    >
-      <Typography variant="body2" color="text.secondary">
-        © {new Date().getFullYear()} iWork. All rights reserved.
-      </Typography>
-    </Box>
+   <footer className="py-6 text-center text-sm text-muted-foreground border-t border-border w-full">
+        © {new Date().getFullYear()} i-Work. All rights reserved.
+      </footer>
   );
 }
