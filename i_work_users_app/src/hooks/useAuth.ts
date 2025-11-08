@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ChangeEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
+// import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import z from "zod";
 interface UseAuthFormOptions<T> {
     initialData: T;
@@ -15,7 +15,7 @@ export function useAuthForm<T extends Record<string, any>>({
     userRole,
     isLogin = false,
 }: UseAuthFormOptions<T>) {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const [step, setStep] = useState<"form" | "otp" | "login">(
         isLogin ? "login" : "form"
     );
@@ -40,8 +40,10 @@ export function useAuthForm<T extends Record<string, any>>({
     // ✅ Validate form
     const validateForm = (): boolean => {
         const result = validationSchema.safeParse(formData);
-
+        console.log("passed");
+        
         if (!result.success) {
+             console.log("failed");
             const errorMap: Record<string, string> = {};
             result.error.issues.forEach((issue) => {
                 errorMap[issue.path[0] as string] = issue.message;
@@ -71,9 +73,9 @@ export function useAuthForm<T extends Record<string, any>>({
             // await sendOTP(formData.mobile, userRole);
 
             // Mock API call
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-
-            setStep("otp");
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            console.log("passed in send");
+            
             toast.success("OTP sent successfully!");
         } catch (error) {
             toast.error("Failed to send OTP. Please try again.");
@@ -95,34 +97,34 @@ export function useAuthForm<T extends Record<string, any>>({
     };
 
     // ✅ OTP Verification Success
-    const handleOtpVerified = async (token: string) => {
-        try {
-            // Save token
-            localStorage.setItem("auth_token", token);
+    // const handleOtpVerified = async (token: string) => {
+    //     try {
+    //         // Save token
+    //         localStorage.setItem("auth_token", token);
 
-            // Prepare user data
-            const userData = {
-                mobile: (formData as any).mobile,
-                name: isLogin ? "Demo User" : (formData as any).name,
-                role: isLogin ? "labour" : userRole,
-            };
-            localStorage.setItem("user_data", JSON.stringify(userData));
-            toast.success(isLogin ? "Login successful!" : "Registration successful!");
-            setTimeout(() => {
-                const dashboardRoute =
-                    userData.role === "labour"
-                        ? "/employee/dashboard"
-                        : "/employer/dashboard";
-                navigate(dashboardRoute);
-            }, isLogin ? 1000 : 1000);
-        } catch (error) {
-            toast.error(
-                isLogin
-                    ? "Login failed. Please try again."
-                    : "Registration failed. Please try again."
-            );
-        }
-    };
+    //         // Prepare user data
+    //         const userData = {
+    //             mobile: (formData as any).mobile,
+    //             name: isLogin ? "Demo User" : (formData as any).name,
+    //             role: isLogin ? "labour" : userRole,
+    //         };
+    //         localStorage.setItem("user_data", JSON.stringify(userData));
+    //         toast.success(isLogin ? "Login successful!" : "Registration successful!");
+    //         setTimeout(() => {
+    //             const dashboardRoute =
+    //                 userData.role === "labour"
+    //                     ? "/employee/dashboard"
+    //                     : "/employer/dashboard";
+    //             navigate(dashboardRoute);
+    //         }, isLogin ? 1000 : 1000);
+    //     } catch (error) {
+    //         toast.error(
+    //             isLogin
+    //                 ? "Login failed. Please try again."
+    //                 : "Registration failed. Please try again."
+    //         );
+    //     }
+    // };
 
     const handleBackToForm = () => {
         setStep(isLogin ? "login" : "form");
@@ -143,7 +145,7 @@ export function useAuthForm<T extends Record<string, any>>({
         handleChange,
         handleSendOtp,
         handleResendOtp,
-        handleOtpVerified,
+        // handleOtpVerified,
         handleBackToForm,
         validateForm,
         resetForm,
