@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Phone, ArrowRight } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
 export function Login({ onNavigateToSignup }) {
+  const navigate = useNavigate();
   const [mobileNumber, setMobileNumber] = useState('');
 
   const handleSubmit = (e) => {
@@ -67,7 +69,7 @@ export function Login({ onNavigateToSignup }) {
             <p className="text-gray-400 text-sm">
               Don't have an account?{' '}
               <button 
-                onClick={onNavigateToSignup}
+                onClick={()=>navigate("/")}
                 className="text-blue-400 hover:text-blue-300 font-semibold underline transition-colors"
               >
                 Sign Up

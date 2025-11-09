@@ -6,13 +6,13 @@ import { Menu, X } from "lucide-react";
 interface HeaderProps {
   title: string;
   subtitle?: string;
-  onNavigateToLogin?: () => void;
+  handleLogin?: () => void;
 }
 
 const AuthHeader: React.FC<HeaderProps> = ({
   title,
   subtitle,
-  onNavigateToLogin,
+  handleLogin,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -54,7 +54,7 @@ const AuthHeader: React.FC<HeaderProps> = ({
 
           {/* Login Button (Always Visible) */}
           <Button
-            onClick={onNavigateToLogin}
+            onClick={handleLogin}
             variant="secondary"
             className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-4 sm:px-5 py-2 rounded-xl"
           >
