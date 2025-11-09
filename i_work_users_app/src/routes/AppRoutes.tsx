@@ -7,6 +7,7 @@ import Footer from "../components/layout/Footer";
 import HomePage from "../pages/HomePage";
 import { Login } from "../pages/auth/Login";
 import { Register } from "../pages/auth/Register";
+import EmployeeDashboard from "../pages/employer/index";
 
 export default function AppRoutes() {
   const [selectedUserType, setSelectedUserType] = useState<string | null>(null);
@@ -39,6 +40,16 @@ export default function AppRoutes() {
               onBack={handleBack}
             />
           }
+         
+        />
+         <Route
+          path="/contractor"
+          element={
+            <EmployeeDashboard 
+              // onBack={handleBack}
+            />
+          }
+         
         />
       </Routes>
 
