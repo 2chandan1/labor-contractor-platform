@@ -77,8 +77,10 @@ export function useAuthForm<T extends Record<string, any>>({
             console.log("passed in send");
             
             toast.success("OTP sent successfully!");
+               return true; 
         } catch (error) {
             toast.error("Failed to send OTP. Please try again.");
+              return false; 
         }
     };
     // ✅ Resend OTP

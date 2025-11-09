@@ -6,7 +6,7 @@ interface UseOtpTimerOptions {
 }
 
 export function useOtpTimer({
-  initialTime = 300,
+  initialTime = 90,
   onExpire,
 }: UseOtpTimerOptions = {}) {
   const [timer, setTimer] = useState(initialTime);
