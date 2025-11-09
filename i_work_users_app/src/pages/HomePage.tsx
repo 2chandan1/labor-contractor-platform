@@ -4,7 +4,7 @@ import Footer from '@/components/layout/Footer';
 import { useNavigate } from "react-router-dom";
 import RoleCard from "./RoleCard";
 
-export default function Index({ onSelect }) {
+export default function HomePage({ onSelect }) {
   const navigate = useNavigate();
 
   const handleLogin = () => navigate("/login");
@@ -18,11 +18,11 @@ export default function Index({ onSelect }) {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       
       {/* Header */}
-      <AuthHeader
+      {/* <AuthHeader
         title="Welcome to i-Work"
         subtitle="Connecting Labourers and Contractors Effortlessly"
         handleLogin={handleLogin}
-      />
+      /> */}
 
       {/* Hero Section */}
       <section className="relative w-full flex flex-col justify-center items-center text-center pt-8 pb-20 px-4 sm:px-6 lg:px-8">
@@ -84,8 +84,6 @@ export default function Index({ onSelect }) {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }
