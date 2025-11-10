@@ -4,7 +4,7 @@ const RoleCard = ({ title, description, icon: Icon, gradient, border, onClick })
   return (
     <div
       onClick={onClick}
-      className={`xs:max-w-xs group relative overflow-hidden rounded-3xl sm:p-10 p-4 text-center cursor-pointer
+      className={`max-w-xs sm:max-w-md group relative overflow-hidden rounded-3xl sm:pt-6 p-2 text-center cursor-pointer
                   transition-all duration-500 hover:scale-[1.03] hover:-translate-y-1.5
                   border ${border} bg-gradient-to-br ${gradient}`}
     >
@@ -12,14 +12,14 @@ const RoleCard = ({ title, description, icon: Icon, gradient, border, onClick })
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 blur-2xl 
                       transition-all duration-700 bg-gradient-to-tr"></div>
 
-      <div className="relative z-10 flex flex-col items-center space-y-6">
+      <div className="relative z-10 flex flex-col items-center space-y-4">
         <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-lg transition-transform 
                         duration-300 group-hover:scale-110 bg-white/10">
           <Icon className="w-5 h-5 text-white" strokeWidth={2} />
         </div>
 
         <h2 className="text-xl sm:text-3xl font-bold text-white">{title}</h2>
-        <p className="text-white/80 text-xs sm:text-lg max-w-sm mx-auto">
+        <p className="text-white/80 text-xs sm:text-lg max-w-sm ">
           {description}
         </p>
 
