@@ -4,7 +4,7 @@ const RoleCard = ({ title, description, icon: Icon, gradient, border, onClick })
   return (
     <div
       onClick={onClick}
-      className={`max-w-xs sm:max-w-md group relative overflow-hidden rounded-3xl  p-2 text-center cursor-pointer
+      className={`max-w-xs sm:max-w-md group relative overflow-hidden rounded-3xl sm:pt-6 p-2 text-center cursor-pointer
                   transition-all duration-500 hover:scale-[1.03] hover:-translate-y-1.5
                   border ${border} bg-gradient-to-br ${gradient}`}
     >
