@@ -24,12 +24,9 @@ export function Login() {
   });
   const navigate = useNavigate();
   const [showOtp, setShowOtp] = useState(false);
-  const [isOtpSent, setIsOtpSent] = useState(false);
-
   const handleSubmit = async () => {
     const success = await handleSendOtp();
     if (success){
-      setIsOtpSent(true);
       setShowOtp(true);
     } 
   };
@@ -48,34 +45,33 @@ export function Login() {
 
         {/* Icon */}
         <div className="flex justify-center mb-4">
-          <div className="w-20 h-20 bg-gradient-to-tr from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 animate-pulse">
+          <div className="sm:w-20 sm:h-20 w-12 h-12 bg-gradient-to-tr from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 animate-pulse">
             <Phone className="w-8 h-8 text-white" strokeWidth={2.5} />
           </div>
         </div>
 
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">
+          <h1 className="sm:text-3xl text-xl font-bold text-white mb-2 tracking-wide">
             Welcome Back
           </h1>
           <p className="text-gray-400 text-sm">
             Enter your mobile number to continue
           </p>
         </div>
-
-        {/* Input Field */}
         <div className="mb-6">
           <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2">
-              <Phone className="w-5 h-5 text-gray-400" />
-            </div>
+            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <span className="absolute left-10 top-1/2 -translate-y-1/2 text-gray-300 text-sm">
+              +91
+            </span>
             <input
               type="tel"
               value={formData.mobile}
               name="mobile"
               onChange={handleChange}
               placeholder="Enter mobile number"
-              className={`w-full pl-12 pr-4 py-4 bg-slate-700/50 border rounded-xl text-white placeholder-gray-500 
+              className={`w-full pl-20 pr-4 py-4 bg-slate-700/50 border rounded-xl text-white placeholder-gray-500 
                 focus:outline-none focus:ring-2 transition-all duration-300 ${
                   errors.mobile
                     ? "border-red-500 focus:ring-red-500"
@@ -90,18 +86,13 @@ export function Login() {
         {/* Continue Button */}
         <button
           onClick={handleSubmit}
-          disabled={ isOtpSent}
           className={`w-full py-4 font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-300 mb-6 
-            ${
-              isOtpSent
-                ? "bg-gray-600 cursor-not-allowed opacity-50"
-                : "bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-600 hover:shadow-[0_0_20px_5px_rgba(59,130,246,0.4)] text-white"
+            ${ "bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-600 hover:shadow-[0_0_20px_5px_rgba(59,130,246,0.4)] text-white"
             }`}
         >
-          <span>{isOtpSent ? "OTP Sent" : "Send OTP"}</span>
+          <span> Send OTP</span>
           <ArrowRight className="w-5 h-5" />
         </button>
-
         {/* Secure Login */}
         <p className="text-center text-gray-500 text-sm mb-4">Secure Login</p>
 
@@ -121,27 +112,19 @@ export function Login() {
       ) : (
         
       <div className="flex flex-col sm:max-w-md max-w-sm p-9">
-         
             <OTPVerification
               mobileNumber={formData.mobile}
               onVerifySuccess={(token) =>
                 console.log("✅ OTP verified successfully:", token)
               }
-              onResendOtp={async () => {
-                await handleSendOtp();
-              }}
-              onBack={() => {
-                setShowOtp(false);
-                setIsOtpSent(false);
-              }}
+              onResendOtp={async () => { await handleSendOtp(); }}
+              onBack={() => {setShowOtp(false);}}
             />
           
 
           
         </div>
-
       )}
     </div>
-    
   );
 }
