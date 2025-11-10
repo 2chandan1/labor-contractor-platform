@@ -21,15 +21,12 @@ export function useAuthForm<T extends Record<string, any>>({
     );
     const [formData, setFormData] = useState<T>(initialData);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    // ✅ Handle input change
     const handleChange = (
             e:| ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
             | { target: { name: string; value: any } }
         ) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
-
-        // Clear error for this field
         if (errors[name]) {
             setErrors((prev) => {
                 const newErrors = { ...prev };
@@ -107,6 +104,7 @@ export function useAuthForm<T extends Record<string, any>>({
 
             // Prepare user data
             const userData = {
+                ...formData,
                 mobile: (formData as any).mobile,
                 name: isLogin ? "Demo User" : (formData as any).name,
                 role: isLogin ? "labour" : userRole,

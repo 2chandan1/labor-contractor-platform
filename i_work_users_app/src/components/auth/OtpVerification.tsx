@@ -40,13 +40,12 @@ export default function OTPVerification({
 
   const {
     resendTimer,
-    expireTimer,
     formattedResendTime,
     isExpired,
     resetTimer,
   } = useOtpTimer({
-    resendTime: 15, // time before resend enabled
-    expireTime: 20, // OTP expiry time
+    resendTime: 15,
+    expireTime: 30,
     onExpire: () => toast.error("OTP has expired"),
   });
 
