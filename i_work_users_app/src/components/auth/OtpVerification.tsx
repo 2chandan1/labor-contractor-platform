@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { useOtpInput } from "../../hooks/useOtpInput";
 import { useOtpTimer } from "../../hooks/useOtpTimer";
 import { Loader2 } from "lucide-react";
@@ -16,6 +15,7 @@ interface OTPVerificationProps {
 }
 
 export default function OTPVerification({
+  mobileNumber,
   onVerifySuccess,
   onResendOtp,
   onBack,
@@ -38,8 +38,15 @@ export default function OTPVerification({
     onComplete: () => handleVerify(),
   });
 
-  const { timer, formattedTime, resetTimer, isExpired, isWarning } = useOtpTimer({
-    initialTime: 90,
+  const {
+    resendTimer,
+    expireTimer,
+    formattedResendTime,
+    isExpired,
+    resetTimer,
+  } = useOtpTimer({
+    resendTime: 15, // time before resend enabled
+    expireTime: 20, // OTP expiry time
     onExpire: () => toast.error("OTP has expired"),
   });
 
@@ -65,7 +72,7 @@ export default function OTPVerification({
       } else {
         throw new Error("Invalid OTP");
       }
-    } catch (error) {
+    } catch {
       toast.error("Invalid OTP. Please try again.");
       clearOtp();
     } finally {
@@ -87,20 +94,26 @@ export default function OTPVerification({
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto p-6 backdrop-blur-md bg-white/90 border border-gray-200 shadow-lg rounded-2xl">
+    <Card className="w-full sm:max-w-md max-w-sm mx-auto p-6 backdrop-blur-md bg-white/90 border border-gray-200 shadow-lg rounded-2xl">
       <CardHeader>
-        <p
-          className={`text-center text-sm ${
-            isWarning ? "text-red-600" : "text-gray-500"
-          }`}
-        >
-          We've sent a verification code to your mobile number
-        </p>
+        <div className="text-center text-l">
+          <p className="text-gray-700 mb-2">Please enter the OTP sent to</p>
+          <span className="font-semibold text-gray-700">+91 {mobileNumber}</span>
+          {onBack && (
+            <button
+              onClick={onBack}
+              disabled={loading}
+              className="text-blue-600 hover:text-blue-500 text-sm font-medium underline transition-colors px-2 disabled:opacity-50"
+            >
+              Change
+            </button>
+          )}
+        </div>
       </CardHeader>
 
       <CardContent className="flex flex-col items-center space-y-6">
         {/* OTP Boxes */}
-        <div className="flex justify-center gap-2 sm:gap-3">
+        <div className="flex justify-center gap-1 sm:gap-3">
           {otp.map((digit, index) => (
             <input
               key={index}
@@ -113,19 +126,14 @@ export default function OTPVerification({
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={handlePaste}
               disabled={loading}
-              className={`w-12 h-14 text-center text-xl font-semibold rounded-xl border-2 transition-all focus:outline-none
-                ${
-                  digit
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-gray-300 bg-white text-gray-700"
-                }
-                focus:ring-4 focus:ring-primary/30
-              `}
+              className={`sm:w-12 sm:h-14 w-10 h-12 text-center text-xl font-semibold rounded-xl border-2 transition-all focus:outline-none ${
+                digit
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-gray-300 bg-white text-gray-700"
+              } focus:ring-4 focus:ring-primary/30`}
             />
           ))}
         </div>
-
-        
 
         {/* Verify Button */}
         <Button
@@ -144,49 +152,28 @@ export default function OTPVerification({
         </Button>
 
         {/* Resend Section */}
-        <div className="text-center">
-          {timer > 0 ? (
-            <p className="text-sm text-gray-500">
-              Didn’t receive OTP?{" "}
-              <span className="text-gray-400 font-medium">
-                Resend in {formattedTime}
-              </span>
-            </p>
+        <div className="text-center mt-4 flex items-center justify-center">
+          <span className="text-sm text-gray-800 pr-2">Didn’t receive OTP?</span>
+          {resendTimer > 0 ? (
+            <span className="text-blue-700 font-medium animate-pulse">
+              {formattedResendTime}s
+            </span>
           ) : (
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={handleResend}
               disabled={resending}
-              className="font-semibold text-primary hover:bg-primary/10"
+              className="text-blue-500 font-medium hover:underline text-sm transition-all duration-200 disabled:text-gray-400"
             >
               {resending ? (
-                <>
-                  <Loader2 className="animate-spin mr-1 h-4 w-4" /> Sending...
-                </>
+                <span className="flex items-center justify-center gap-1">
+                  <Loader2 className="animate-spin h-4 w-4" /> Sending...
+                </span>
               ) : (
-                "🔄 Resend OTP"
+                "Resend OTP"
               )}
-            </Button>
+            </button>
           )}
         </div>
-
-        <Separator className="my-2" />
-
-        {onBack && (
-          <Button
-            variant="outline"
-            className="w-full py-5 text-base font-semibold rounded-xl"
-            onClick={onBack}
-            disabled={loading}
-          >
-            ← Edit Mobile Number
-          </Button>
-        )}
-
-        <p className="text-xs text-gray-400 text-center mt-2">
-          💡 Tip: For testing, use OTP: <strong>123456</strong>
-        </p>
       </CardContent>
     </Card>
   );

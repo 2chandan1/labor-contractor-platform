@@ -7,7 +7,8 @@ import Footer from "../components/layout/Footer";
 import HomePage from "../pages/HomePage";
 import { Login } from "../pages/auth/Login";
 import { Register } from "../pages/auth/Register";
-import EmployeeDashboard from "../pages/employer/index";
+import EmployerDashboard from "../pages/employer/index";
+import EmployeeDashboard from "../pages/employee/Index";
 
 export default function AppRoutes() {
   const [selectedUserType, setSelectedUserType] = useState<string | null>(null);
@@ -17,6 +18,7 @@ export default function AppRoutes() {
 
   return (
     <>
+     <div className="flex flex-col  min-h-[100dvh]">
       {/* ✅ Header always visible */}
       <Header
         title="Welcome to i-Work"
@@ -45,6 +47,15 @@ export default function AppRoutes() {
          <Route
           path="/contractor"
           element={
+            <EmployerDashboard 
+              // onBack={handleBack}
+            />
+          }
+         
+        />
+         <Route
+          path="/laboour"
+          element={
             <EmployeeDashboard 
               // onBack={handleBack}
             />
@@ -55,6 +66,7 @@ export default function AppRoutes() {
 
       {/* ✅ Footer always visible */}
       <Footer />
+      </div>
     </>
   );
 }
