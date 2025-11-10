@@ -35,21 +35,21 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center flex-col  justify-center bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 p-6 relative overflow-hidden">
-      
+   <div className="p-6 w-full  min-h-[77dvh] flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 relative overflow-hidden">
+
       {/* Animated Gradient Orbs */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute w-72 h-72 bg-blue-600/20 rounded-full blur-3xl top-10 left-10 animate-pulse" />
         <div className="absolute w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl bottom-10 right-10 animate-pulse delay-150" />
       </div>
 
-      {/* Login Card */}
-      <div className="relative z-10 w-full max-w-md bg-slate-800/60 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-[0_0_40px_-10px_rgba(0,0,0,0.5)] transition-transform hover:-translate-y-1 hover:shadow-blue-500/30">
+      {!showOtp ? (
+      <div className="relative z-10 w-full max-w-md bg-slate-800/60 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 shadow-[0_0_40px_-10px_rgba(0,0,0,0.5)] transition-transform  hover:shadow-blue-500/30">
 
         {/* Icon */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-4">
           <div className="w-20 h-20 bg-gradient-to-tr from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 animate-pulse">
-            <Phone className="w-10 h-10 text-white" strokeWidth={2.5} />
+            <Phone className="w-8 h-8 text-white" strokeWidth={2.5} />
           </div>
         </div>
 
@@ -105,23 +105,6 @@ export function Login() {
         {/* Secure Login */}
         <p className="text-center text-gray-500 text-sm mb-4">Secure Login</p>
 
-        {/* OTP Section */}
-        {showOtp && (
-          <div className="mt-8 flex justify-center">
-            <OTPVerification
-              mobileNumber={formData.mobile}
-              onVerifySuccess={(token) => console.log("OTP verified:", token)}
-              onResendOtp={async () => {
-                await handleSendOtp();
-              }}
-              onBack={() => {
-              setShowOtp(false);
-              setIsOtpSent(false);
-            }}
-            />
-          </div>
-        )}
-
         {/* Sign Up */}
         <div className="text-center pt-4 border-t border-slate-700">
           <p className="text-gray-400 text-sm">
@@ -133,19 +116,32 @@ export function Login() {
               Sign Up
             </button>
           </p>
-        </div>
-      </div>
+      </div>       
+       </div>
+      ) : (
+        
+      <div className="flex flex-col sm:max-w-md max-w-sm p-9">
+         
+            <OTPVerification
+              mobileNumber={formData.mobile}
+              onVerifySuccess={(token) =>
+                console.log("✅ OTP verified successfully:", token)
+              }
+              onResendOtp={async () => {
+                await handleSendOtp();
+              }}
+              onBack={() => {
+                setShowOtp(false);
+                setIsOtpSent(false);
+              }}
+            />
+          
 
-      {/* Terms Text */}
-       <div className="text-center mt-6">
-          <p className="text-gray-400 text-sm">
-            By continuing, you agree to our{' '}
-            <button className="text-blue-400 hover:text-blue-300 underline">
-              Terms of Service
-            </button>
-          </p>
+          
         </div>
-      
+
+      )}
     </div>
+    
   );
 }

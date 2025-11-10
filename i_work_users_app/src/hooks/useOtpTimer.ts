@@ -1,31 +1,49 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface UseOtpTimerOptions {
-  initialTime?: number; // in seconds
+  resendTime?: number; 
+  expireTime?: number; 
   onExpire?: () => void;
 }
 
 export function useOtpTimer({
-  initialTime = 90,
+  resendTime = 7,
+  expireTime = 180,
   onExpire,
 }: UseOtpTimerOptions = {}) {
-  const [timer, setTimer] = useState(initialTime);
-
-  // Timer countdown
-  useEffect(() => {
-    if (timer > 0) {
+   const [resendTimer, setResendTimer] = useState(resendTime);
+  const [expireTimer, setExpireTimer] = useState(expireTime);
+  const [isExpired, setIsExpired] = useState(false);
+   useEffect(() => {
+    if (resendTimer > 0) {
       const interval = setInterval(() => {
-        setTimer((prev) => {
-          if (prev === 1 && onExpire) {
-            onExpire();
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [resendTimer]);
+  // Timer countdown
+  // ⏳ OTP expiry countdown
+  useEffect(() => {
+    if (expireTimer > 0) {
+      const interval = setInterval(() => {
+        setExpireTimer((prev) => {
+          if (prev === 1) {
+            setIsExpired(true);
+            onExpire?.();
           }
           return prev - 1;
         });
       }, 1000);
       return () => clearInterval(interval);
     }
-  }, [timer, onExpire]);
+  }, [expireTimer, onExpire]);
 
+  const resetTimer = useCallback(() => {
+    setResendTimer(resendTime);
+    setExpireTimer(expireTime);
+    setIsExpired(false);
+  }, [resendTime, expireTime]);
   // Format timer display
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -33,21 +51,17 @@ export function useOtpTimer({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // Reset timer
-  const resetTimer = () => setTimer(initialTime);
 
-  // Check if expired
-  const isExpired = timer === 0;
 
   // Check if warning (less than 1 minute)
-  const isWarning = timer < 60 && timer > 0;
+ 
 
   return {
-    timer,
-    formatTime,
+    resendTimer,
+    expireTimer,
+    formattedResendTime: formatTime(resendTimer),
+    formattedExpireTime: formatTime(expireTimer),
     resetTimer,
     isExpired,
-    isWarning,
-    formattedTime: formatTime(timer),
   };
 }
