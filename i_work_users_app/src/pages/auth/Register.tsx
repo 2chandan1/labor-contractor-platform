@@ -2,6 +2,7 @@ import {
   CheckCircle2,
   ArrowRight,
   ArrowLeft,
+  Upload,
 } from "lucide-react";
 import { z } from "zod";
 import { useAuthForm } from "@/hooks/useAuth";
@@ -22,6 +23,9 @@ const registerSchema = z.object({
   mobile: z
     .string()
     .regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
+  aadhaarCard: z
+    .string()
+    .min(1, "Please upload your Aadhaar card image"),
   terms: z.literal(true, {
     errorMap: () => ({ message: "Please agree to the Terms & Conditions" }),
   })
@@ -34,12 +38,14 @@ const initialFormData = {
   experience: "",
   location: "",
   mobile: "",
+  aadhaarCard: "",
   terms: false,
 };
 
 export function Register({ userType: propUserType, onBack }) {
   const [showOtp, setShowOtp] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+  const [aadhaarPreview, setAadhaarPreview] = useState<string | null>(null);
   const userType = propUserType || localStorage.getItem("userType") || "contractor";
 
   const { formData, errors, handleChange, handleSendOtp,handleOtpVerified  } = useAuthForm({
@@ -48,6 +54,18 @@ export function Register({ userType: propUserType, onBack }) {
     userRole: userType,
   });
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      handleChange({
+        target: { name: "aadhaarCard", value: reader.result as string },
+      } as any);
+    };
+    reader.readAsDataURL(file); // Converts image → Base64
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     const success = await handleSendOtp();
@@ -152,6 +170,45 @@ export function Register({ userType: propUserType, onBack }) {
                 )
               )}
 
+                <div className="col-span-1 sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Aadhaar Card 
+                </label>
+                <div className="flex items-center gap-3">
+                  <label
+                    htmlFor="aadhaarCard"
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-700/40 border border-slate-600 rounded-lg text-gray-300 cursor-pointer hover:bg-slate-700 transition-all"
+                  >
+                    <Upload className="w-5 h-5" />
+                    <span className="sm:text-lg text-sm">Upload Image</span>
+                  </label>
+                  <input
+                    id="aadhaarCard"
+                    name="aadhaarCard"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                     className="block w-full text-sm text-gray-300
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-full file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-blue-600 file:text-white
+                      hover:file:bg-blue-500"
+                  />
+                  {aadhaarPreview && (
+                    <img
+                      src={aadhaarPreview}
+                      alt="Aadhaar Preview"
+                      className="w-16 h-16 object-cover rounded-lg border border-slate-600"
+                    />
+                  )}
+                </div>
+                {errors.aadhaarCard && (
+                  <p className="text-red-400 text-xs mt-1">
+                    {errors.aadhaarCard}
+                  </p>
+                )}
+              </div>
               {/* ✅ Terms & Conditions */}
               <div className="col-span-1 sm:col-span-2 flex flex-col mt-2 space-y-2 sm:space-y-0  text-gray-300">
                 <div className="flex  items-center space-x-2 mb-2">
