@@ -1,14 +1,14 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Card, CardHeader, CardContent } from "../../components/ui/card";
 import { useOtpInput } from "../../hooks/useOtpInput";
 import { useOtpTimer } from "../../hooks/useOtpTimer";
 import { Loader2 } from "lucide-react";
 
 interface OTPVerificationProps {
   mobileNumber: string;
-  userType?: "labour" | "constructor";
+  userType?: "labour" | "contractor";
   onVerifySuccess: (token: string) => void;
   onResendOtp: () => Promise<void>;
   onBack?: () => void;

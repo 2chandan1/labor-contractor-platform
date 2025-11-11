@@ -25,9 +25,23 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>(
       type: String,
       default: null
     },
+    age: {
+      type: Number,
+      required: [true, 'Age is required'],
+      min: [18, 'Minimum age is 18'],
+      max: [55, 'Maximum age is 55']
+    },
+    gender:{
+      type: String,
+      default: 'Not Specified'
+    },
+    aadhaarCard: {
+      type: String,
+      required: [true, 'Aadhaar card image is required']
+    },
     city: {
       type: String,
-      required: [true, 'City is required']
+     
     },
     address: {
       type: String
@@ -47,7 +61,10 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>(
     totalBookings: {
       type: Number,
       default: 0
-    }
+    },
+    termsAndCondition:{
+      type:Boolean
+    },
   },
   {
     timestamps: true
@@ -55,6 +72,6 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>(
 );
 
 EmployerProfileSchema.index({ userId: 1 });
-EmployerProfileSchema.index({ 'location.city': 1 });
+EmployerProfileSchema.index({ 'city': 1 });
 
 export default mongoose.model<IEmployerProfile>('EmployerProfile', EmployerProfileSchema);
