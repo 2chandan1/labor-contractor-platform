@@ -1,8 +1,8 @@
 import { Phone, ArrowRight } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { useAuthForm } from '@/hooks/useAuth';
-import OTPVerification from '@/components/auth/OtpVerification';
+import { useAuthForm } from '../../hooks/useAuth';
+import OTPVerification from '../../components/auth/OtpVerification';
 import { useState } from 'react';
 const mobileSchema = z.object({
   mobile: z

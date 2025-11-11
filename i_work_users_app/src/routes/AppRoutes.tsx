@@ -54,7 +54,7 @@ export default function AppRoutes() {
          
         />
          <Route
-          path="/laboour"
+          path="/labour"
           element={
             <EmployeeDashboard 
               // onBack={handleBack}

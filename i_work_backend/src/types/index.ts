@@ -91,6 +91,7 @@ export interface IEmployeeProfile extends Document {
   totalWorkDays: number;
   isAvailable: boolean;
   languages: string[];
+  termsAndCondition:boolean,
   createdAt: Date;
   updatedAt: Date;
 }
@@ -103,10 +104,16 @@ export interface IEmployerProfile extends Document {
   profilePhoto?: string;
   city: string;
   address?: string;
+  age:number,
+  gender:string,
   rating: {
     average: number;
     count: number;
   };
+   aadhaarCard: {
+    imageUrl: string;
+  };
+  termsAndCondition:boolean,
   totalBookings: number;
   createdAt: Date;
   updatedAt: Date;

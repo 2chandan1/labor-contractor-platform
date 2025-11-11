@@ -106,7 +106,10 @@ const EmployeeProfileSchema = new Schema<IEmployeeProfile>(
     languages: {
       type: [String],
       default: ['Hindi', 'English']
-    }
+    },
+    termsAndCondition:{
+      type:Boolean
+    },
   },
   {
     timestamps: true

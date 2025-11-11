@@ -5,35 +5,29 @@ import {
   Upload,
 } from "lucide-react";
 import { z } from "zod";
-
 import { useState } from "react";
 import TermsandCondition from "../../components/auth/TermsandCondition";
 import OTPVerification from "../../components/auth/OtpVerification";
 import { useAuthForm } from "../../hooks/useAuth";
-const registerSchema = z.object({
-  fullName: z.string().min(3, "Full name must be at least 3 characters"),
-  age: z.string().min(1, "Age is required").refine((val) => {
-    const age = Number(val);
-    return age >= 18 && age <= 60;
-  },
-    { message: "Age must be between 18 and 60" }
-  ),
-  gender: z.string().nonempty("Please select gender"),
-  experience: z.string().min(1, "Experience is required"),
-  
-  mobile: z
-    .string()
-    .regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
-  aadhaarCard: z
-    .string()
-    .min(1, "Please upload your Aadhaar card image"),
-  address: z.string().min(3, "Address is required"),
-  city: z.string().min(2, "City is required"),
-  terms: z.literal(true, {
-    errorMap: () => ({ message: "Please agree to the Terms & Conditions" }),
-  })
-});
+interface RegisterProps {
+  userType?: 'labour' | 'contractor';
+  onBack: () => void;
+}
 
+const THEME_CONFIG = {
+  labour: {
+    iconBgColor: 'bg-blue-500',
+    buttonColor: 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-600 hover:to-cyan-400"',
+    ringColor: 'focus:ring-blue-500',
+    shadow: 'blue',
+  },
+  contractor: {
+    iconBgColor: 'bg-purple-500',
+    buttonColor: 'bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400',
+    ringColor: 'focus:ring-purple-500',
+    shadow: 'purple',
+  }
+};
 const initialFormData = {
   fullName: "",
   age: "",
@@ -47,12 +41,38 @@ const initialFormData = {
   terms: false,
 };
 
-export function Register({ userType: propUserType, onBack }) {
+export function Register({ userType: propUserType, onBack }:RegisterProps) {
   const [showOtp, setShowOtp] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
-  const [aadhaarPreview, setAadhaarPreview] = useState<string | null>(null);
-  const userType = propUserType || localStorage.getItem("userType") || "contractor";
-
+  const userType = (propUserType || localStorage.getItem("userType") || "contractor") as 'labour' | 'contractor';
+  const isLabour = userType === "labour";
+  const registerSchema = z.object({
+    fullName: z.string().min(3, "Full name must be at least 3 characters"),
+    age: z.string().min(1, "Age is required").refine((val) => {
+      const age = Number(val);
+      return age >= 18 && age <= 60;
+    },
+    { message: "Age must be between 18 and 60" }
+    ),
+    gender: z.string().nonempty("Please select gender"),
+    experience: isLabour 
+      ? z.string().min(1, "Experience is required") 
+      : z.string().optional(),
+    
+    mobile: z
+      .string()
+      .regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
+    aadhaarCard: z
+      .any()
+      .refine((val) => val instanceof File || typeof val === "string", {
+        message: "Please upload your Aadhaar card image",
+    }),
+    address: z.string().min(3, "Address is required"),
+    city: z.string().min(2, "City is required"),
+    terms: z.literal(true, {
+      errorMap: () => ({ message: "Please agree to the Terms & Conditions" }),
+    })
+  });
   const { formData, errors, handleChange, handleSendOtp,handleOtpVerified  } = useAuthForm({
     initialData: initialFormData,
     validationSchema: registerSchema,
@@ -62,16 +82,10 @@ export function Register({ userType: propUserType, onBack }) {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      handleChange({
-        target: { name: "aadhaarCard", value: reader.result as string },
-      } as any);
-    };
-    reader.readAsDataURL(file); // Converts image → Base64
+     handleChange({ target: { name: "aadhaarCard", value: file } } as any);
+    
   };
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e:React.FormEvent<HTMLFormElement> ) => {
     e.preventDefault();
     const success = await handleSendOtp();
     if (success) {
@@ -79,22 +93,16 @@ export function Register({ userType: propUserType, onBack }) {
     }
   };
 
-  const isLabour = userType === "labour";
-  const iconBgColor = isLabour ? "bg-blue-500" : "bg-purple-500";
-  const buttonColor = isLabour
-    ? "bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400"
-    : "bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400";
-  const ringColor = isLabour ? "focus:ring-blue-500" : "focus:ring-purple-500";
+ 
+  const theme = THEME_CONFIG[userType as 'labour' | 'contractor'];
 
   return (
     <div className="min-h-[77dvh] flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-2 relative overflow-hidden">
-      {/* Animated Background Orbs */}
       <div className="absolute top-20 left-20 w-72 h-72 bg-blue-500/10 blur-[100px] rounded-full animate-pulse" />
       <div className="absolute bottom-10 right-10 w-72 h-72 bg-purple-500/10 blur-[100px] rounded-full animate-pulse" />
       {!showOtp ? (
         <>
           <div className=" w-full max-w-5xl bg-slate-800/40 backdrop-blur-md border border-slate-700/40 rounded-3xl p-4 sm:p-6 shadow-2xl relative z-10">
-            {/* Back Button */}
             <button
               onClick={onBack}
               className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors "
@@ -106,7 +114,7 @@ export function Register({ userType: propUserType, onBack }) {
             {/* Header */}
             <div className="flex flex-col items-center mb-4">
               <div
-                className={`sm:w-14 sm:h-14 h-12 w-12 ${iconBgColor} rounded-full flex items-center justify-center shadow-lg shadow-${isLabour ? "blue" : "purple"}-500/30 mb-4`}
+                className={`sm:w-14 sm:h-14 h-12 w-12 ${theme.iconBgColor} rounded-full flex items-center justify-center shadow-lg shadow-${isLabour ? "blue" : "purple"}-500/30 mb-4`}
               >
                 <CheckCircle2 className="sm:w-8 sm:h-8 text-white" />
               </div>
@@ -123,8 +131,11 @@ export function Register({ userType: propUserType, onBack }) {
               onSubmit={handleSubmit}
               className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-3xl w-full mx-auto px-4 sm:px-6"
             >
-              {["fullName", "age", "gender", "experience",  "mobile"].map(
-                (field) => (
+              {(["fullName", "age", "gender", "experience",  "mobile"]as const).map(
+                
+                (field) => {
+                   if (field === "experience" && !isLabour) return null; // hide for contractors
+                   return (
                   <div key={field} className="w-full">
                     <label className="block text-sm font-medium text-gray-300 mb-2 capitalize">
                       {field === "fullName"
@@ -137,7 +148,7 @@ export function Register({ userType: propUserType, onBack }) {
                         name={field}
                         value={formData[field]}
                         onChange={handleChange}
-                        className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-gray-300 focus:outline-none focus:ring-2 ${ringColor} transition-all appearance-none cursor-pointer`}
+                        className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-gray-300 focus:outline-none focus:ring-2 ${theme.ringColor} transition-all appearance-none cursor-pointer`}
                       >
                         <option value="">Select Gender</option>
                         <option value="male">Male</option>
@@ -153,10 +164,11 @@ export function Register({ userType: propUserType, onBack }) {
                             value={formData[field]}
                             onChange={handleChange}
                             placeholder="Enter mobile number"
-                            className={`w-full pl-12 sm:pl-14 px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${ringColor} transition-all`}
+                            className={`w-full pl-12 sm:pl-14 px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${theme.ringColor} transition-all`}
                           />
                         </div> ):(
-                      <input
+                         
+                      <input 
                         type={
                           field === "age" || field === "experience" ? "number" : "text"
                         }
@@ -164,7 +176,7 @@ export function Register({ userType: propUserType, onBack }) {
                         value={formData[field]}
                         onChange={handleChange}
                         placeholder={`Enter ${field}`}
-                        className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${ringColor} transition-all`}
+                        className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${theme.ringColor} transition-all`}
                       />
                     )}
 
@@ -172,7 +184,7 @@ export function Register({ userType: propUserType, onBack }) {
                       <p className="text-red-400 text-xs mt-1">{errors[field]}</p>
                     )}
                   </div>
-                )
+               ) }
               )}
               <div className="w-full">
                 <label className="block text-sm font-medium text-gray-300 mb-1">Address</label>
@@ -182,7 +194,7 @@ export function Register({ userType: propUserType, onBack }) {
                   value={formData.address}
                   onChange={handleChange}
                   placeholder="Street, Building..."
-                   className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${ringColor} transition-all`}
+                   className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${theme.ringColor} transition-all`}
                 />
                 {errors.address && <p className="text-red-400 text-xs mt-1">{errors.address}</p>}
               </div>
@@ -196,7 +208,7 @@ export function Register({ userType: propUserType, onBack }) {
                     value={formData.city}
                     onChange={handleChange}
                     placeholder="City"
-                     className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${ringColor} transition-all`}
+                     className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${theme.ringColor} transition-all`}
                   />
                   {errors.city && <p className="text-red-400 text-xs mt-1">{errors.city}</p>}
                 </div>
@@ -228,13 +240,7 @@ export function Register({ userType: propUserType, onBack }) {
                       file:bg-blue-600 file:text-white
                       hover:file:bg-blue-500"
                   />
-                  {aadhaarPreview && (
-                    <img
-                      src={aadhaarPreview}
-                      alt="Aadhaar Preview"
-                      className="w-16 h-16 object-cover rounded-lg border border-slate-600"
-                    />
-                  )}
+                 
                 </div>
                 {errors.aadhaarCard && (
                   <p className="text-red-400 text-xs mt-1">
@@ -273,7 +279,7 @@ export function Register({ userType: propUserType, onBack }) {
               <div className="col-span-1 sm:col-span-2 flex justify-center mt-4">
                 <button
                   type="submit"
-                  className={`w-full sm:w-1/2 ${buttonColor} text-white font-semibold py-3 sm:py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-${isLabour ? "blue" : "purple"
+                  className={`w-full sm:w-1/2 ${theme.buttonColor} text-white font-semibold py-3 sm:py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-${isLabour ? "blue" : "purple"
                     }-500/40 `}
                 >
                   <span>Send OTP</span>
