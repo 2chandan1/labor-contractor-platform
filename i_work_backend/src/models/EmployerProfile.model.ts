@@ -25,18 +25,12 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>(
       type: String,
       default: null
     },
-    location: {
-      city: {
-        type: String,
-        required: [true, 'City is required']
-      },
-      state: {
-        type: String,
-        required: [true, 'State is required']
-      },
-      address: {
-        type: String
-      }
+    city: {
+      type: String,
+      required: [true, 'City is required']
+    },
+    address: {
+      type: String
     },
     rating: {
       average: {

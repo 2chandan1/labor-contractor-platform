@@ -22,53 +22,49 @@ const EmployeeProfileSchema = new Schema<IEmployeeProfile>(
       min: [18, 'Minimum age is 18'],
       max: [55, 'Maximum age is 55']
     },
+    gender:{
+      type: String,
+      default: 'Not Specified'
+    },
     profilePhoto: {
       type: String,
       default: null
     },
     aadhaarCard: {
-      number: {
-        type: String,
-        required: [true, 'Aadhaar number is required'],
-        unique: true,
-        match: [/^\d{12}$/, 'Please provide a valid 12-digit Aadhaar number']
-      },
-      imageUrl: {
-        type: String,
-        required: [true, 'Aadhaar card image is required']
-      }
+      type: String,
+      required: [true, 'Aadhaar card image is required']
     },
-    laborTypes: {
-      type: [String],
-      enum: Object.values(LaborType),
-      required: [true, 'At least one labor type is required'],
-      validate: {
-        validator: function(v: string[]) {
-          return v.length > 0 && v.length <= 5;
-        },
-        message: 'Select between 1 and 5 labor types'
-      }
-    },
+    // laborTypes: {
+    //   type: [String],
+    //   enum: Object.values(LaborType),
+    //   required: [true, 'At least one labor type is required'],
+    //   validate: {
+    //     validator: function(v: string[]) {
+    //       return v.length > 0 && v.length <= 5;
+    //     },
+    //     message: 'Select between 1 and 5 labor types'
+    //   }
+    // },
     experience: {
       type: Number,
       required: [true, 'Experience is required'],
       min: [0, 'Experience cannot be negative'],
       max: [50, 'Experience seems too high']
     },
-    location: {
-      type: {
-        type: String,
-        enum: ['Point'],
-        default: 'Point'
-      },
-      coordinates: {
-        type: [Number],
-        required: true,
-        validate: {
-          validator: (v: number[]) => Array.isArray(v) && v.length === 2,
-          message: 'Invalid coordinates'
-        }
-      },
+    
+      // type: {
+      //   type: String,
+      //   enum: ['Point'],
+      //   default: 'Point'
+      // },
+      // coordinates: {
+      //   type: [Number],
+      //   required: true,
+      //   validate: {
+      //     validator: (v: number[]) => Array.isArray(v) && v.length === 2,
+      //     message: 'Invalid coordinates'
+      //   }
+      // },
       address: {
         type: String,
         required: true
@@ -77,16 +73,16 @@ const EmployeeProfileSchema = new Schema<IEmployeeProfile>(
         type: String,
         required: true
       },
-      state: {
-        type: String,
-        required: true
-      },
-      pincode: {
-        type: String,
-        required: true,
-        match: [/^\d{6}$/, 'Please provide a valid 6-digit pincode']
-      }
-    },
+      // state: {
+      //   type: String,
+      //   required: true
+      // },
+      // pincode: {
+      //   type: String,
+      //   required: true,
+      //   match: [/^\d{6}$/, 'Please provide a valid 6-digit pincode']
+      // }
+    
     rating: {
       average: {
         type: Number,

@@ -2,8 +2,8 @@ import { Document } from 'mongoose';
 
 // User Roles
 export enum UserRole {
-  EMPLOYEE = 'employee',
-  EMPLOYER = 'employer',
+  EMPLOYEE = 'labour',
+  EMPLOYER = 'contractor',
   ADMIN = 'admin'
 }
 
@@ -38,10 +38,10 @@ export enum BookingStatus {
 
 // Subscription Plans
 export enum SubscriptionPlan {
-  EMPLOYEE_MONTHLY = 'employee_monthly', // ₹49/month
-  EMPLOYER_MONTHLY = 'employer_monthly', // ₹150/month
-  EMPLOYER_QUARTERLY = 'employer_quarterly', // ₹400/3 months
-  EMPLOYER_HALF_YEARLY = 'employer_half_yearly' // ₹750/6 months
+  EMPLOYEE_MONTHLY = 'labour_monthly', // ₹49/month
+  EMPLOYER_MONTHLY = 'contractor_monthly', // ₹150/month
+  EMPLOYER_QUARTERLY = 'contractor_quarterly', // ₹400/3 months
+  EMPLOYER_HALF_YEARLY = 'contractor_half_yearly' // ₹750/6 months
 }
 
 // Payment Status
@@ -74,21 +74,16 @@ export interface IEmployeeProfile extends Document {
   userId: IUser['_id'];
   fullName: string;
   age: number;
+  gender: string;
   profilePhoto?: string;
   aadhaarCard: {
-    number: string;
     imageUrl: string;
   };
   laborTypes: LaborType[];
   experience: number; // in years
-  location: {
-    type: string;
-    coordinates: [number, number]; // [longitude, latitude]
-    address: string;
-    city: string;
-    state: string;
-    pincode: string;
-  };
+  address: string;
+  city: string;
+  
   rating: {
     average: number;
     count: number;
@@ -106,11 +101,8 @@ export interface IEmployerProfile extends Document {
   fullName: string;
   companyName?: string;
   profilePhoto?: string;
-  location: {
-    city: string;
-    state: string;
-    address?: string;
-  };
+  city: string;
+  address?: string;
   rating: {
     average: number;
     count: number;
@@ -127,7 +119,7 @@ export interface ISubscription extends Document {
   startDate: Date;
   endDate: Date;
   isActive: boolean;
-  isTrial: boolean; // First month free for employees
+  isTrial: boolean;
   autoRenew: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -160,7 +152,7 @@ export interface IRating extends Document {
   bookingId: IBooking['_id'];
   fromUserId: IUser['_id'];
   toUserId: IUser['_id'];
-  rating: number; // 1-5
+  rating: number;
   review?: string;
   createdAt: Date;
 }

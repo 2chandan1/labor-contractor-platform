@@ -1,6 +1,6 @@
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"; // shadcn/ui
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../../components/ui/dialog";
+import { ScrollArea } from "../../components/ui/scroll-area";
 interface TermsAndConditionsModalProps {
   open: boolean;
   onClose: () => void;
