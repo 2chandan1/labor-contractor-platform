@@ -5,10 +5,11 @@ import {
   Upload,
 } from "lucide-react";
 import { z } from "zod";
-import { useAuthForm } from "@/hooks/useAuth";
+
 import { useState } from "react";
-import TermsandCondition from "@/components/auth/TermsandCondition";
-import OTPVerification from "@/components/auth/OtpVerification";
+import TermsandCondition from "../../components/auth/TermsandCondition";
+import OTPVerification from "../../components/auth/OtpVerification";
+import { useAuthForm } from "../../hooks/useAuth";
 const registerSchema = z.object({
   fullName: z.string().min(3, "Full name must be at least 3 characters"),
   age: z.string().min(1, "Age is required").refine((val) => {
@@ -19,13 +20,15 @@ const registerSchema = z.object({
   ),
   gender: z.string().nonempty("Please select gender"),
   experience: z.string().min(1, "Experience is required"),
-  location: z.string().min(2, "Location is required"),
+  
   mobile: z
     .string()
     .regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
   aadhaarCard: z
     .string()
     .min(1, "Please upload your Aadhaar card image"),
+  address: z.string().min(3, "Address is required"),
+  city: z.string().min(2, "City is required"),
   terms: z.literal(true, {
     errorMap: () => ({ message: "Please agree to the Terms & Conditions" }),
   })
@@ -39,6 +42,8 @@ const initialFormData = {
   location: "",
   mobile: "",
   aadhaarCard: "",
+  address: "", 
+  city: "", 
   terms: false,
 };
 
@@ -118,7 +123,7 @@ export function Register({ userType: propUserType, onBack }) {
               onSubmit={handleSubmit}
               className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-3xl w-full mx-auto px-4 sm:px-6"
             >
-              {["fullName", "age", "gender", "experience", "location", "mobile"].map(
+              {["fullName", "age", "gender", "experience",  "mobile"].map(
                 (field) => (
                   <div key={field} className="w-full">
                     <label className="block text-sm font-medium text-gray-300 mb-2 capitalize">
@@ -169,7 +174,35 @@ export function Register({ userType: propUserType, onBack }) {
                   </div>
                 )
               )}
+              <div className="w-full">
+                <label className="block text-sm font-medium text-gray-300 mb-1">Address</label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="Street, Building..."
+                   className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${ringColor} transition-all`}
+                />
+                {errors.address && <p className="text-red-400 text-xs mt-1">{errors.address}</p>}
+              </div>
 
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">City</label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    placeholder="City"
+                     className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${ringColor} transition-all`}
+                  />
+                  {errors.city && <p className="text-red-400 text-xs mt-1">{errors.city}</p>}
+                </div>
+              </div>
+
+              {/* ✅ Aadhaar Card Upload */}
                 <div className="col-span-1 sm:col-span-2">
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Aadhaar Card 
