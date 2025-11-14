@@ -129,7 +129,6 @@ export const otpVerify= async (req:Request, res:Response)=>{
 
       sms_res.on('end', async()=> {
         const responseJson=JSON.parse(data);
-        console.log("Verify Response",responseJson);
         const response= 'success'
         if(response==='success'){
           const user = await User.findOne({ mobileNumber: mobileNumber });
@@ -196,13 +195,11 @@ export const register = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Aadhaar card image is required" });
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ mobileNumber });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
    
-    // Create user instance (but do NOT save yet)
     const user = new User({
       mobileNumber,
       role,

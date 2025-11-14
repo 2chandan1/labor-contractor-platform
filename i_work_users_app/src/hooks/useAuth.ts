@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import z from "zod";
 import axiosInstance from "../services/api/axios.config";
+import { STORAGE_KEYS } from "../utils/constants";
 interface UseAuthFormOptions<T> {
     initialData: T;
     validationSchema: z.ZodSchema<any>;
@@ -110,9 +111,10 @@ export function useAuthForm<T extends Record<string, any>>({
     const handleOtpVerified = async (verifyResponse: any) => {
         try {
             const {isExistingUser, token, user} =verifyResponse;
-            localStorage.setItem("auth_token", token);
             if(isExistingUser){
-                localStorage.setItem("user_data",JSON.stringify(user))
+                localStorage.setItem(STORAGE_KEYS.TOKEN, token);
+                localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+                window.dispatchEvent(new Event("login-status-changed"));
                 toast.success("Login successful!");
                 const dashboardRoute =user.role === "labour" ? "/labour" : "/contractor";
                 setTimeout(() => navigate(dashboardRoute),1000);
@@ -137,7 +139,9 @@ export function useAuthForm<T extends Record<string, any>>({
             const response = await axiosInstance.post("/auth/register", formDataToSend, {
                 headers: {"Content-Type": "multipart/form-data"},
             });
-            localStorage.setItem("user_data", JSON.stringify(response.data.user));
+            localStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
+            localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.data.user));
+            window.dispatchEvent(new Event("login-status-changed"));
             toast.success("Registration successful!");
             const dashboardRoute =userRole === "labour" ? "/labour" : "/contractor";
             setTimeout(() => navigate(dashboardRoute), 1000);

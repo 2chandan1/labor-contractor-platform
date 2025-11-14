@@ -3,8 +3,8 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localho
 
 // Local Storage Keys
 export const STORAGE_KEYS = {
-  TOKEN: 'labor_auth_token',
-  USER: 'labor_user_data',
+  TOKEN: 'auth_token',
+  USER: 'user_data',
   LANGUAGE: 'labor_app_language',
 } as const;
 

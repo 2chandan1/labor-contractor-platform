@@ -1,9 +1,10 @@
 // src/routes/user.routes.ts
 import { Router, Request, Response } from 'express';
 import { EmployeeProfile, User,EmployerProfile } from '../models';
+import { verifyTocken } from '../middleware/validate';
 const router = Router();
 
-router.get('/:mobileNumber', async (req :Request, res:Response)=>{
+router.get('/:mobileNumber', verifyTocken,async (req :Request, res:Response)=>{
   const { mobileNumber } = req.params;
   if (!mobileNumber) return res.status(400).json({ message: 'Mobile number is required' });
   const user=await User.findOne({mobileNumber});

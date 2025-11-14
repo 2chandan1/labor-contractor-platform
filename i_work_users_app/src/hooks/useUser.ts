@@ -1,27 +1,40 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../services/api/axios.config";
 
-export const useUser =()=>{
-    const [user,setUser]= useState<any>(()=>{
-        const stored=localStorage.getItem("user_data");
-        return stored? JSON.parse(stored):null;
-    });
-    const [loading,setLoading]  = useState(!user);
-    console.log("user",user.mobileNumber);
-    
-    useEffect(()=>{
-        const fetchUser=async()=>{
-            try{
-                const response= await axiosInstance.get(`/users/${user.mobileNumber??user.user.mobileNumber}`);
+export const useUser = () => {
+    const [user, setUser] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const stored = localStorage.getItem("user_data");
+        if (!stored) {
+            setLoading(false);
+            return;
+        }
+
+        const storedUser = JSON.parse(stored);
+        setUser(storedUser);
+
+        const mobile = storedUser.mobileNumber || storedUser.user?.mobileNumber;
+        if (!mobile) {
+            setLoading(false);
+            return;
+        }
+
+        const fetchUser = async () => {
+            try {
+                const response = await axiosInstance.get(`/users/${mobile}`);
                 setUser(response.data);
-                localStorage.setItem("user_data",JSON.stringify(response.data));
-            }catch(error){
-                console.error("Error fetching user data",error);
-            }finally{
+                localStorage.setItem("user_data", JSON.stringify(response.data));
+            } catch (error) {
+                console.error("Error fetching user data", error);
+            } finally {
                 setLoading(false);
             }
         };
+
         fetchUser();
-    },[user?.mobileNumber]);
-    return {user,loading};
-}
+    }, []);
+
+    return { user, loading };
+};
