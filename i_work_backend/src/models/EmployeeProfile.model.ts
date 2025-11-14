@@ -118,7 +118,6 @@ const EmployeeProfileSchema = new Schema<IEmployeeProfile>(
 
 // Geospatial index for location-based queries
 EmployeeProfileSchema.index({ 'location.coordinates': '2dsphere' });
-EmployeeProfileSchema.index({ userId: 1 });
 EmployeeProfileSchema.index({ laborTypes: 1 });
 EmployeeProfileSchema.index({ 'location.city': 1 });
 EmployeeProfileSchema.index({ isAvailable: 1 });

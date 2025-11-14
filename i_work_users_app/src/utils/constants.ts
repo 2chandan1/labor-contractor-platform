@@ -11,7 +11,7 @@ export const STORAGE_KEYS = {
 // Routes
 export const ROUTES = {
   HOME: '/',
-  LOGIN: '/login',
+  LOGIN: '/logins',
   REGISTER: '/register',
   OTP_VERIFY: '/verify-otp',
   

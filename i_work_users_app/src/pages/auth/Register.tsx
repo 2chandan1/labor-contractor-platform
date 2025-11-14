@@ -17,7 +17,7 @@ interface RegisterProps {
 const THEME_CONFIG = {
   labour: {
     iconBgColor: 'bg-blue-500',
-    buttonColor: 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-600 hover:to-cyan-400"',
+    buttonColor: 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-600 hover:to-cyan-400',
     ringColor: 'focus:ring-blue-500',
     shadow: 'blue',
   },

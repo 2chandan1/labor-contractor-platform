@@ -34,7 +34,6 @@ const UserSchema = new Schema<IUser>(
 );
 
 // Index for faster queries
-UserSchema.index({ mobileNumber: 1 });
 UserSchema.index({ role: 1, status: 1 });
 
 export default mongoose.model<IUser>('User', UserSchema);

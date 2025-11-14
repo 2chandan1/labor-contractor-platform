@@ -5,6 +5,7 @@ import { Card, CardHeader, CardContent } from "../../components/ui/card";
 import { useOtpInput } from "../../hooks/useOtpInput";
 import { useOtpTimer } from "../../hooks/useOtpTimer";
 import { Loader2 } from "lucide-react";
+import axiosInstance from "../../services/api/axios.config";
 
 interface OTPVerificationProps {
   mobileNumber: string;
@@ -64,15 +65,19 @@ export default function OTPVerification({
 
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      if (otpString === "123456") {
+      const response=await axiosInstance.post('/auth/verify-otp',{
+        mobileNumber,
+        otp:otpString
+      });
+      if (response.data.success) {
         toast.success("OTP verified successfully!");
-        onVerifySuccess("mock-jwt-token-" + Date.now());
+        onVerifySuccess(response.data);
       } else {
-        throw new Error("Invalid OTP");
+        throw new Error(response.data.message || "Invalid OTP");
       }
-    } catch {
-      toast.error("Invalid OTP. Please try again.");
+    } catch(error:any) {
+
+      toast.error(error?.response?.data?.message||"Invalid OTP. Please try again.");
       clearOtp();
     } finally {
       setLoading(false);
