@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import z from "zod";
 import axiosInstance from "../services/api/axios.config";
+import { STORAGE_KEYS } from "../utils/constants";
 interface UseAuthFormOptions<T> {
     initialData: T;
     validationSchema: z.ZodSchema<any>;
@@ -36,11 +37,10 @@ export function useAuthForm<T extends Record<string, any>>({
             });
         }
     };
+
     // ✅ Validate form
     const validateForm = (): boolean => {
         const result = validationSchema.safeParse(formData);
-        console.log("passed");
-        
         if (!result.success) {
              console.log("failed");
             const errorMap: Record<string, string> = {};
@@ -48,40 +48,51 @@ export function useAuthForm<T extends Record<string, any>>({
                 errorMap[issue.path[0] as string] = issue.message;
             });
             setErrors(errorMap);
-
-            // Show first error as toast
             const firstError = Object.values(errorMap)[0];
             if (firstError) {
                 toast.error(firstError);
             }
-
             return false;
         }
-
         setErrors({});
         return true;
     };
+
     // ✅ Send OTP
     const handleSendOtp = async () => {
-        if (!validateForm()) {
+        if (!validateForm()) return;
+        const mobileNumber=formData.mobile
+        const checkRes = await axiosInstance.post("/auth/check-user", {
+             mobileNumber
+        });
+        const exists = checkRes.data?.exists;
+
+        if(isLogin && !exists){
+            toast.error("User Does not exists , Please register first");
             return;
         }
-
+        if(!isLogin && exists){
+            toast.error("User Already exists");
+            return;
+        }
         try {
-            // TODO: Replace with actual API call
-            // await sendOTP(formData.mobile, userRole);
-
-            // Mock API call
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            console.log("passed in send");
-            
-            toast.success("OTP sent successfully!");
+            //MSG91 API CALL FOR SEND OTP
+            const response= await axiosInstance.post('/auth/send-otp',{
+                mobileNumber
+            })
+            if(response.data.success){
+                toast.success("OTP sent successfully!");
                return true; 
-        } catch (error) {
+            }
             toast.error("Failed to send OTP. Please try again.");
-              return false; 
+            return false;
+        } catch (error) {
+            const errorMessage =  "Failed to send OTP. Please try again.";
+            toast.error(errorMessage);
+            return false;
         }
     };
+
     // ✅ Resend OTP
     const handleResendOtp = async () => {
         try {
@@ -97,94 +108,48 @@ export function useAuthForm<T extends Record<string, any>>({
         }
     };
 
-    // ✅ OTP Verification Success
-    // const handleOtpVerified = async (token: string) => {
-    //     try {
-    //         // Save token
-    //         localStorage.setItem("auth_token", token);
-    //             const userData = {
-    //                     mobileNumber: formData.mobile, // backend expects 'mobileNumber'
-    //                     role: userRole, // 'labour' or 'contractor'
-    //                     fullName: formData.fullName,
-    //                     age: formData.age,
-    //                     gender: formData.gender,
-    //                     experience: formData.experience,
-    //                     address: formData.address,
-    //                     city: formData.city,
-    //                     state: formData.state,
-    //                     pincode: formData.pincode,
-    //                     aadhaarCard: formData.aadhaarCard,
-    //                     };
-    //                     const response = await axiosInstance.post('/users/register', userData);
-    //         // Prepare user data
-    //         // const userData = {
-    //         //     ...formData,
-    //         //     mobile: (formData as any).mobile,
-    //         //     name: isLogin ? "Demo User" : (formData as any).name,
-    //         //     role: isLogin ? "labour" : userRole,
-    //         // };
-    //         console.log("userData",response.data.user);
-            
-    //         localStorage.setItem("user_data", JSON.stringify(response.data.user));
-    //         toast.success(isLogin ? "Login successful!" : "Registration successful!");
-    //         setTimeout(() => {
-    //             const dashboardRoute =
-    //                 userData.role === "labour"
-    //                     ? "/laboour"
-    //                     : "/contractor";
-    //             navigate(dashboardRoute);
-    //         }, isLogin ? 1000 : 1000);
-    //     } catch (error) {
-    //         toast.error(
-    //             isLogin
-    //                 ? "Login failed. Please try again."
-    //                 : "Registration failed. Please try again."
-    //         );
-    //     }
-    // };
-const handleOtpVerified = async (token: string) => {
-    try {
-        // Save token
-        localStorage.setItem("auth_token", token);
-        console.log("formData",formData);
-        
-        // Create FormData
-        const formDataToSend = new FormData();
-        formDataToSend.append("mobileNumber", formData.mobile);
-        formDataToSend.append("role", userRole);
-        formDataToSend.append("fullName", formData.fullName);
-        formDataToSend.append("age", String(formData.age));
-        formDataToSend.append("gender", formData.gender);
-        formDataToSend.append("experience", String(formData.experience));
-        formDataToSend.append("address", formData.address);
-        formDataToSend.append("city", formData.city);
-        formDataToSend.append("termsAndCondition",formData.terms);
-        formDataToSend.append("state", formData.state);
-        formDataToSend.append("pincode", formData.pincode);
-        formDataToSend.append("aadhaarCard", formData.aadhaarCard);
+    const handleOtpVerified = async (verifyResponse: any) => {
+        try {
+            const {isExistingUser, token, user} =verifyResponse;
+            if(isExistingUser){
+                localStorage.setItem(STORAGE_KEYS.TOKEN, token);
+                localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+                window.dispatchEvent(new Event("login-status-changed"));
+                toast.success("Login successful!");
+                const dashboardRoute =user.role === "labour" ? "/labour" : "/contractor";
+                setTimeout(() => navigate(dashboardRoute),1000);
+                return;
+            }    
+            // Create FormData
+            const formDataToSend = new FormData();
+            formDataToSend.append("mobileNumber", formData.mobile);
+            formDataToSend.append("role", userRole!);
+            formDataToSend.append("fullName", formData.fullName);
+            formDataToSend.append("age", String(formData.age));
+            formDataToSend.append("gender", formData.gender);
+            if(userRole === "labour") {
+                formDataToSend.append("experience", String(formData.experience));
+            }
+            formDataToSend.append("address", formData.address);
+            formDataToSend.append("city", formData.city);
+            formDataToSend.append("termsAndCondition",formData.terms);
+            formDataToSend.append("aadhaarCard", formData.aadhaarCard);
 
-        // Append Aadhaar file
-
-        const response = await axiosInstance.post("/auth/register", formDataToSend, {
-            headers: {
-                "Content-Type": "multipart/form-data", // important!
-            },
-        });
-
-        console.log("userData", response.data.user);
-
-        localStorage.setItem("user_data", JSON.stringify(response.data.user));
-        toast.success("Registration successful!");
-        setTimeout(() => {
-            const dashboardRoute =
-                userRole === "labour" ? "/labour" : "/contractor";
-            navigate(dashboardRoute);
-        }, 1000);
-    } catch (error) {
-        console.error(error);
-        toast.error("Registration failed. Please try again.");
-    }
-};
+            //Register API
+            const response = await axiosInstance.post("/auth/register", formDataToSend, {
+                headers: {"Content-Type": "multipart/form-data"},
+            });
+            localStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
+            localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.data.user));
+            window.dispatchEvent(new Event("login-status-changed"));
+            toast.success("Registration successful!");
+            const dashboardRoute =userRole === "labour" ? "/labour" : "/contractor";
+            setTimeout(() => navigate(dashboardRoute), 1000);
+        } catch (error) {
+            console.error(error);
+            toast.error("Registration failed. Please try again.");
+        }
+    };
 
     const handleBackToForm = () => {
         setStep(isLogin ? "login" : "form");

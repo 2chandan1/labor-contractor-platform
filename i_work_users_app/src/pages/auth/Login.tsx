@@ -17,6 +17,7 @@ export function Login() {
     errors,
     handleChange,
     handleSendOtp,
+     handleOtpVerified
   } = useAuthForm({
     initialData: initialFormData,
     validationSchema: mobileSchema,
@@ -114,9 +115,7 @@ export function Login() {
       <div className="flex flex-col sm:max-w-md max-w-sm p-9">
             <OTPVerification
               mobileNumber={formData.mobile}
-              onVerifySuccess={(token) =>
-                console.log("✅ OTP verified successfully:", token)
-              }
+              onVerifySuccess={handleOtpVerified}
               onResendOtp={async () => { await handleSendOtp(); }}
               onBack={() => {setShowOtp(false);}}
             />

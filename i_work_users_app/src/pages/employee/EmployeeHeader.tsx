@@ -13,26 +13,19 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn]=useState(false);
-
   const navigate = useNavigate();
   useEffect(()=>{
-    const checkAuth=()=>{
-      const token=localStorage.getItem(STORAGE_KEYS.TOKEN);
-      setIsLoggedIn(!!token)
-    };
-    checkAuth();
-    window.addEventListener("login-status-changed",checkAuth)
-    return()=>{
-      window.removeEventListener("login-status-changed",checkAuth);
-    }
-  },[])
-
+    const token=localStorage.getItem('auth_token');
+    setIsLoggedIn(!!token);
+  },[]);
+  console.log("isLoggedIn",isLoggedIn);
+  
   const handleLogin = () => navigate("/login");
   const handleHome = () => navigate("/");
   const handleLogout=()=>{
     localStorage.removeItem(STORAGE_KEYS.TOKEN)
     localStorage.removeItem(STORAGE_KEYS.USER)
-    setIsLoggedIn(false)
+    setIsLoggedIn(false);
     navigate("/")
   }
   return (
@@ -72,20 +65,23 @@ const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
               Contact Support
             </button>
           </nav>
-          {!isLoggedIn ? (
-            <Button
-              onClick={handleLogin}
-              className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold px-4 sm:px-5 py-2 rounded-xl shadow-md hover:shadow-blue-500/30 transition-all"
-            >
-              Login
-            </Button>
-            ):(
-              <div className="flex items-center gap-3">
+
+          {/* Login Button */}
+        {!isLoggedIn}?(
+          <Button
+            onClick={handleLogin}
+            className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold px-4 sm:px-5 py-2 rounded-xl shadow-md hover:shadow-blue-500/30 transition-all"
+          >
+            Login
+          </Button>
+        ):(
+            <div className="flex items-center gap-3">
                 <Button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl">
-                Logout
+
+                    Logout
                 </Button>
-              </div>
-            )}
+            </div>
+        )
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}

@@ -71,7 +71,7 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>(
   }
 );
 
-EmployerProfileSchema.index({ userId: 1 });
+
 EmployerProfileSchema.index({ 'city': 1 });
 
 export default mongoose.model<IEmployerProfile>('EmployerProfile', EmployerProfileSchema);
