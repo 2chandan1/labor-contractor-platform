@@ -2,7 +2,8 @@ import { Request, response, Response } from "express";
 import { User, EmployeeProfile, EmployerProfile } from "../models";
 import { UserStatus } from "../types";
 import jwt from "jsonwebtoken";
-
+import { Otp } from "../models/Otp.model";
+const authkey = process.env.MSG91_AUTH_KEY!;
 export const checkUser= async (req:Request, res:Response)=>{
    try {
       const {mobileNumber} =req.body;
@@ -23,19 +24,13 @@ export const checkUser= async (req:Request, res:Response)=>{
       });
    }
 }
+
 export const sendOtp= async (req:Request,res:Response)=>{
     try {
         const {mobileNumber}= req.body;
         if(!mobileNumber) return res.status(400).json({message:"Mobile number is required"})
         const formattedMobilenumber=mobileNumber.startsWith("91")?mobileNumber:`91${mobileNumber}`;
-        console.log(formattedMobilenumber);
-      
-        const authkey = process.env.MSG91_AUTH_KEY!;
-        console.log("authkey",authkey);
-        
         const templateId = process.env.MSG91_TEMPLATE_ID!;
-        console.log(templateId,"templateid");
-        
         const otp_expiry=15;
         const http = require('https');
         const options = {
@@ -56,11 +51,16 @@ export const sendOtp= async (req:Request,res:Response)=>{
             data += chunk;
           });
 
-          sms_res.on('end', function () {
+          sms_res.on('end', async () => {
             console.log("Full MSG91 Response:", data); 
             const responseJson=JSON.parse(data);
             console.log("Parsed Response:", responseJson);
             if (responseJson.type === "success") {
+              await Otp.findOneAndUpdate(
+                {mobileNumber},
+                {request_id:responseJson.request_id},
+                 {upsert:true}
+              );
               return res.status(200).json({
                 success: true,
                 message: "OTP sent successfully",
@@ -96,6 +96,35 @@ export const sendOtp= async (req:Request,res:Response)=>{
         })
      }
 }
+
+// export const resendOtp= async (req:Request,res:Response)=>{
+//     const http = require('https');
+
+//     const options = {
+//       method: 'GET',
+//       hostname: 'control.msg91.com',
+//       port: null,
+//       path: '/api/v5/otp/retry?authkey=&retrytype=&mobile=',
+//       headers: {
+//         'authkey':`${authkey}`,
+//       }
+//     };
+
+//     const req = http.request(options, function (res) {
+//       const chunks = [];
+
+//       res.on('data', function (chunk) {
+//         chunks.push(chunk);
+//       });
+
+//       res.on('end', function () {
+//         const body = Buffer.concat(chunks);
+//         console.log(body.toString());
+//       });
+//     });
+
+//     req.end();
+// }
 
 export const otpVerify= async (req:Request, res:Response)=>{
 
