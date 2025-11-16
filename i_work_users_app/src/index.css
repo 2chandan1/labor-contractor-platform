@@ -15,6 +15,25 @@ All colors MUST be HSL.
     transition: background-color 5000s ease-in-out 0s;
   }
 }
+@keyframes marquee {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.marquee {
+  display: inline-block;
+  animation: marquee 15s linear infinite;
+  will-change: transform;
+}
+
+.marquee:hover {
+  animation-play-state: paused;
+}
+
+.marquee:active {
+  animation-play-state: paused;
+}
+
 
 @layer base {
   :root {

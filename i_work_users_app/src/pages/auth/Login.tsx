@@ -119,9 +119,6 @@ export function Login() {
               onResendOtp={async () => { await handleSendOtp(); }}
               onBack={() => {setShowOtp(false);}}
             />
-          
-
-          
         </div>
       )}
     </div>
