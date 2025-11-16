@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "../../components/ui/button";
 import { cn } from "../../lib/utils";
-import { Menu, X } from "lucide-react";
+import { Menu, Phone, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { STORAGE_KEYS } from "../../utils/constants";
 
@@ -60,18 +60,29 @@ const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
             )}
           </div>
         </div>
-
         {/* Right Section */}
         <div className="flex items-center gap-3 sm:gap-5">
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
+
             <button className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
               About Us
             </button>
             <button className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
               Contact Support
             </button>
+            <a href="tel:18001080" className="inline-flex">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-1.5 rounded-full shadow-md cursor-pointer select-none">
+                <div className="bg-orange-700/40 p-2 rounded-full">
+                  <Phone className="h-4 w-4 text-white" />
+                </div>
+                <span className="text-white font-semibold text-sm tracking-wide select-none">
+                  1800 1080
+                </span>
+              </div>
+            </a>
           </nav>
+
           {!isLoggedIn ? (
             <Button
               onClick={handleLogin}
@@ -113,9 +124,29 @@ const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
           >
             Contact Support
           </button>
-         
+          <a href="tel:18001080" className="inline-flex">
+            <Button variant="default" className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-1.5 rounded-full shadow-md cursor-pointer select-none">
+              <div className="bg-orange-700/40 p-2 rounded-full">
+                <Phone className="h-4 w-4 text-white" />
+              </div>
+              <span className="text-white font-semibold text-sm tracking-wide select-none">
+                1800 1080
+              </span>
+            </Button>
+          </a> 
         </div>
       )}
+      <div className="w-full bg-orange-600/20 backdrop-blur-sm border-b border-orange-500/30">
+        <div className="overflow-hidden whitespace-nowrap relative">
+          <p
+            className="marquee py-2 text-sm text-orange-400 font-medium"
+          >
+            📢 For complaints or queries, contact our helpline at 
+            <span className="font-semibold text-white"> 1800 1080 </span>
+            — available 24/7 for your assistance.
+          </p>
+        </div>
+      </div>
     </header>
   );
 };

@@ -9,6 +9,7 @@ import { Login } from "../pages/auth/Login";
 import { Register } from "../pages/auth/Register";
 import EmployerDashboard from "../pages/employer/index";
 import EmployeeDashboard from "../pages/employee/Index";
+import NotFound from "../pages/NotFound";
 
 export default function AppRoutes() {
   const [selectedUserType, setSelectedUserType] = useState<string | null>(null);
@@ -62,8 +63,8 @@ export default function AppRoutes() {
           }
          
         />
+          <Route path="*" element={<NotFound />} /> 
       </Routes>
-
       {/* ✅ Footer always visible */}
       <Footer />
       </div>
