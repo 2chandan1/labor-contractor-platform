@@ -4,16 +4,27 @@ import { cn } from "../../lib/utils";
 import { Menu, Phone, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { STORAGE_KEYS } from "../../utils/constants";
-
+import {Trans, useTranslation} from 'react-i18next';
+import i18n from "../../i18n";
 interface HeaderProps {
   title: string;
   subtitle?: string;
 }
+type AppLanguage = "en" | "hi" | "mr" | "tm" | "bn"| "kn" |"ta";
 
 const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn]=useState(false);
-
+   const {t}=useTranslation();
+   const LANGUAGES:  Record<AppLanguage, string> = {
+      en: "English",
+      hi: "हिन्दी",
+      mr: "मराठी",
+      tm: "தமிழ்", // Tamil
+      bn: "বাংলা",  // Bangali
+      kn: "ಕನ್ನಡ", // Kannada
+      ta: "తెలుగు", // Telugu
+    };
   const navigate = useNavigate();
   useEffect(()=>{
     const checkAuth=()=>{
@@ -28,7 +39,24 @@ const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
   },[])
 
   const handleLogin = () => navigate("/login");
-  const handleHome = () => navigate("/");
+  const handleHome = () => {
+    const userStr = localStorage.getItem(STORAGE_KEYS.USER);
+    if (!isLoggedIn || !userStr) {
+      navigate("/");
+      return;
+    }
+    const user = JSON.parse(userStr);
+    switch (user.user.role){
+      case "labour":
+        navigate("/labour");
+        break;
+      case "contractor":
+        navigate("/contractor");
+        break;
+      default:
+        navigate("/");
+    }
+  }
   const handleLogout=()=>{
     localStorage.removeItem(STORAGE_KEYS.TOKEN)
     localStorage.removeItem(STORAGE_KEYS.USER)
@@ -62,6 +90,7 @@ const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
         </div>
         {/* Right Section */}
         <div className="flex items-center gap-3 sm:gap-5">
+
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
 
@@ -82,7 +111,45 @@ const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
               </div>
             </a>
           </nav>
+          <div className="relative group">
+            <button className="flex items-center gap-1 text-gray-300 hover:text-white transition text-sm font-medium">
+              🌐 {LANGUAGES[i18n.language as AppLanguage]}
+              <svg
+                className="w-4 h-4 transition-transform group-hover:rotate-180"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
 
+            <div className="
+              absolute right-0 mt-2 w-32 
+              bg-[#0A0F1C]/95 backdrop-blur-xl
+              border border-white/10 rounded-xl shadow-lg 
+              opacity-0 scale-95 translate-y-1 
+              group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 
+              transition-all duration-200 
+              z-50
+              ">
+              {Object.entries(LANGUAGES).map(([code, label]) => (
+                <button
+                  key={code}
+                  onClick={() => i18n.changeLanguage(code)}
+                  className={`
+                    w-full text-left px-4 py-2 text-sm rounded-lg
+                    hover:bg-white/10 transition
+                    ${i18n.language === code ? "text-orange-400 font-semibold" : "text-gray-300"}
+                  `}
+                >
+                  {label}
+                </button>
+              ))}
+                
+            </div>
+          </div>
           {!isLoggedIn ? (
             <Button
               onClick={handleLogin}
@@ -124,6 +191,8 @@ const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
           >
             Contact Support
           </button>
+         
+
           <a href="tel:18001080" className="inline-flex">
             <Button variant="default" className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-1.5 rounded-full shadow-md cursor-pointer select-none">
               <div className="bg-orange-700/40 p-2 rounded-full">
@@ -136,14 +205,15 @@ const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
           </a> 
         </div>
       )}
-      <div className="w-full bg-orange-600/20 backdrop-blur-sm border-b border-orange-500/30">
+     <div className="w-full bg-orange-600/20 backdrop-blur-sm border-b border-orange-500/30">
         <div className="overflow-hidden whitespace-nowrap relative">
-          <p
-            className="marquee py-2 text-sm text-orange-400 font-medium"
-          >
-            📢 For complaints or queries, contact our helpline at 
-            <span className="font-semibold text-white"> 1800 1080 </span>
-            — available 24/7 for your assistance.
+          <p className="marquee py-2 text-sm text-orange-400 font-medium">
+            <Trans
+              i18nKey="header.helpline"
+              components={{
+                strong: <span className="font-semibold text-white" />
+              }}
+            />
           </p>
         </div>
       </div>

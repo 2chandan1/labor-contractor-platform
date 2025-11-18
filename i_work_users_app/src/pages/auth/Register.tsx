@@ -9,6 +9,8 @@ import { useState } from "react";
 import TermsandCondition from "../../components/auth/TermsandCondition";
 import OTPVerification from "../../components/auth/OtpVerification";
 import { useAuthForm } from "../../hooks/useAuth";
+import { useTranslation } from 'react-i18next';
+
 interface RegisterProps {
   userType?: 'labour' | 'contractor';
   onBack: () => void;
@@ -28,6 +30,7 @@ const THEME_CONFIG = {
     shadow: 'purple',
   }
 };
+
 const initialFormData = {
   fullName: "",
   age: "",
@@ -42,38 +45,35 @@ const initialFormData = {
 };
 
 export function Register({ userType: propUserType, onBack }:RegisterProps) {
+  const { t } = useTranslation();
   const [showOtp, setShowOtp] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const userType = (propUserType || localStorage.getItem("userType") || "contractor") as 'labour' | 'contractor';
   const isLabour = userType === "labour";
+  const roleLabel = isLabour ? t("register.joinAsLabour") : t("register.joinAsContractor");
+
   const registerSchema = z.object({
-    fullName: z.string().min(3, "Full name must be at least 3 characters"),
-    age: z.string().min(1, "Age is required").refine((val) => {
+    fullName: z.string().min(3, t("register.validation.fullNameMin")),
+    age: z.string().min(1, t("register.validation.ageRequired")).refine((val) => {
       const age = Number(val);
       return age >= 18 && age <= 60;
-    },
-    { message: "Age must be between 18 and 60" }
-    ),
-    gender: z.string().nonempty("Please select gender"),
+    }, { message: t("register.validation.ageRange") }),
+    gender: z.string().nonempty(t("register.validation.genderRequired")),
     experience: isLabour 
-      ? z.string().min(1, "Experience is required") 
+      ? z.string().min(1, t("register.validation.experienceRequired")) 
       : z.string().optional(),
-    
     mobile: z
       .string()
-      .regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
+      .regex(/^[6-9]\d{9}$/, t("register.validation.invalidMobile")),
     aadhaarCard: z
       .any()
-      .refine((val) => val instanceof File || typeof val === "string", {
-        message: "Please upload your Aadhaar card image",
-    }),
-    address: z.string().min(3, "Address is required"),
-    city: z.string().min(2, "City is required"),
-    terms: z.literal(true, {
-      errorMap: () => ({ message: "Please agree to the Terms & Conditions" }),
-    })
+      .refine((val) => val instanceof File, { message: t("register.validation.aadhaarRequired") }),
+    address: z.string().min(3, t("register.validation.addressRequired")),
+    city: z.string().min(2, t("register.validation.cityRequired")),
+    terms: z.literal(true, { errorMap: () => ({ message: t("register.validation.termsRequired") }) })
   });
-  const { formData, errors, handleChange, handleSendOtp,handleOtpVerified  } = useAuthForm({
+
+  const { formData, errors, handleChange, handleSendOtp, handleOtpVerified } = useAuthForm({
     initialData: initialFormData,
     validationSchema: registerSchema,
     userRole: userType,
@@ -108,7 +108,7 @@ export function Register({ userType: propUserType, onBack }:RegisterProps) {
               className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors "
             >
               <ArrowLeft className="w-5 h-5" />
-              <span className="text-sm font-medium">Back</span>
+              <span className="text-sm font-medium">{t("register.back")}</span>
             </button>
 
             {/* Header */}
@@ -119,11 +119,9 @@ export function Register({ userType: propUserType, onBack }:RegisterProps) {
                 <CheckCircle2 className="sm:w-8 sm:h-8 text-white" />
               </div>
               <h1 className="sm:text-3xl text-2xl font-extrabold text-white mb-1">
-                Join as {isLabour ? "Labour" : "Contractor"}
+                {roleLabel}
               </h1>
-              <p className="text-gray-400 text-center text-sm">
-                Create your profile and start connecting instantly
-              </p>
+              <p className="text-gray-400 text-center text-sm">{t("register.subtitle")}</p>
             </div>
 
             {/* Form */}
@@ -134,98 +132,110 @@ export function Register({ userType: propUserType, onBack }:RegisterProps) {
               {(["fullName", "age", "gender", "experience",  "mobile"]as const).map(
                 
                 (field) => {
-                   if (field === "experience" && !isLabour) return null; // hide for contractors
+                   if (field === "experience" && !isLabour) return null;
                    return (
                   <div key={field} className="w-full">
                     <label className="block text-sm font-medium text-gray-300 mb-2 capitalize">
-                      {field === "fullName"
-                        ? "Full Name"
-                        : field.charAt(0).toUpperCase() + field.slice(1)}
-                    </label>
+                        {t(`register.form.${field}`)}
+                      </label>
 
-                    {field === "gender" ? (
-                      <select
-                        name={field}
-                        value={formData[field]}
-                        onChange={handleChange}
-                        className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-gray-300 focus:outline-none focus:ring-2 ${theme.ringColor} transition-all appearance-none cursor-pointer`}
-                      >
-                        <option value="">Select Gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                      </select>
-                    ) : field === "mobile" ? (
+                      {field === "gender" ? (
+                        <select
+                          name={field}
+                          value={formData[field]}
+                          onChange={handleChange}
+                          className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-gray-300 focus:outline-none focus:ring-2 ${theme.ringColor} transition-all appearance-none cursor-pointer`}
+                        >
+                          <option value="">{t("register.form.genderPlaceholder")}</option>
+                          <option value="male">{t("register.form.genderMale")}</option>
+                          <option value="female">{t("register.form.genderFemale")}</option>
+                          <option value="other">{t("register.form.genderOther")}</option>
+                        </select>
+                      ) : field === "mobile" ? (
                         <div className="relative flex items-center">
                           <span className="absolute left-3 text-gray-400 text-sm">+91</span>
                           <input
-                            type="text"
+                            type="tel"
                             name={field}
                             value={formData[field]}
                             onChange={handleChange}
-                            placeholder="Enter mobile number"
+                            placeholder={t("register.form.mobilePlaceholder")}
+                            onKeyDown={(e) => {
+                              if (!/[0-9]/.test(e.key) && e.key !== "Backspace") e.preventDefault();
+                            }}
                             className={`w-full pl-12 sm:pl-14 px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${theme.ringColor} transition-all`}
                           />
-                        </div> ):(
-                         
-                      <input 
-                        type={
-                          field === "age" || field === "experience" ? "number" : "text"
-                        }
-                        name={field}
-                        value={formData[field]}
-                        onChange={handleChange}
-                        placeholder={`Enter ${field}`}
-                        className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${theme.ringColor} transition-all`}
-                      />
-                    )}
+                        </div>
+                      ) : (
+                        <input
+                          type={field === "age" || field === "experience" ? "number" : "text"}
+                          name={field}
+                          value={formData[field]}
+                          onChange={handleChange}
+                          placeholder={t(`register.form.${field}`)}
+                          onKeyDown={(e) => {
+                            if (field === "age" || field === "experience") {
+                              if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
+                            }
+                          }}
+                          onInput={(e) => {
+                            if (field === "age" || field === "experience") {
+                              const input = e.currentTarget;
+                              if (Number(input.value) < 0) input.value = "0";
+                            }
+                          }}
+                          className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${theme.ringColor} transition-all`}
+                        />
+                      )}
 
-                    {errors[field] && (
-                      <p className="text-red-400 text-xs mt-1">{errors[field]}</p>
-                    )}
-                  </div>
-               ) }
+                      {errors[field] && (
+                        <p className="text-red-400 text-xs mt-1">{errors[field]}</p>
+                      )}
+                    </div>
+                  );
+                }
               )}
+
+              {/* Address */}
               <div className="w-full">
-                <label className="block text-sm font-medium text-gray-300 mb-1">Address</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">{t("register.form.address")}</label>
                 <input
                   type="text"
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
-                  placeholder="Street, Building..."
-                   className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${theme.ringColor} transition-all`}
+                  placeholder={t("register.form.addressPlaceholder")}
+                  className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${theme.ringColor} transition-all`}
                 />
                 {errors.address && <p className="text-red-400 text-xs mt-1">{errors.address}</p>}
               </div>
 
+              {/* City */}
               <div className="flex flex-col sm:flex-row gap-2">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-300 mb-1">City</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">{t("register.form.city")}</label>
                   <input
                     type="text"
                     name="city"
                     value={formData.city}
                     onChange={handleChange}
-                    placeholder="City"
-                     className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${theme.ringColor} transition-all`}
+                    placeholder={t("register.form.cityPlaceholder")}
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-800/60 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${theme.ringColor} transition-all`}
                   />
                   {errors.city && <p className="text-red-400 text-xs mt-1">{errors.city}</p>}
                 </div>
               </div>
 
-              {/* ✅ Aadhaar Card Upload */}
-                <div className="col-span-1 sm:col-span-2">
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Aadhaar Card 
-                </label>
+              {/* Aadhaar */}
+              <div className="col-span-1 sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">{t("register.form.aadhaar")}</label>
                 <div className="flex items-center gap-3">
                   <label
                     htmlFor="aadhaarCard"
                     className="flex items-center justify-center gap-2 px-4 sm:w-full py-2 bg-slate-700/40 border border-slate-600 rounded-lg text-gray-300 cursor-pointer hover:bg-slate-700 transition-all"
                   >
                     <Upload className="w-5 h-5" />
-                    <span className="sm:text-lg text-sm">Upload Image</span>
+                    <span className="sm:text-lg text-sm">{t("register.form.aadhaarUploadButton")}</span>
                   </label>
                   <input
                     id="aadhaarCard"
@@ -233,24 +243,15 @@ export function Register({ userType: propUserType, onBack }:RegisterProps) {
                     type="file"
                     accept="image/*"
                     onChange={handleFileChange}
-                     className="block w-full text-sm text-gray-300
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-blue-600 file:text-white
-                      hover:file:bg-blue-500"
+                    className="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500"
                   />
-                 
                 </div>
-                {errors.aadhaarCard && (
-                  <p className="text-red-400 text-xs mt-1">
-                    {errors.aadhaarCard}
-                  </p>
-                )}
+                {errors.aadhaarCard && <p className="text-red-400 text-xs mt-1">{errors.aadhaarCard}</p>}
               </div>
-              {/* ✅ Terms & Conditions */}
-              <div className="col-span-1 sm:col-span-2 flex flex-col mt-2 space-y-2 sm:space-y-0  text-gray-300">
-                <div className="flex  items-center space-x-2 mb-2">
+
+              {/* Terms */}
+              <div className="col-span-1 sm:col-span-2 flex flex-col mt-2 space-y-2 sm:space-y-0 text-gray-300">
+                <div className="flex items-center space-x-2 mb-2">
                   <input
                     type="checkbox"
                     id="terms"
@@ -261,33 +262,26 @@ export function Register({ userType: propUserType, onBack }:RegisterProps) {
                     className="w-4 h-4 accent-blue-500 cursor-pointer"
                   />
                   <label htmlFor="terms" className="text-sm leading-tight">
-                    I agree to the{" "}
+                    {t("register.form.termsPrefix")}{" "}
                     <span onClick={() => setShowTerms(true)} className="text-blue-400 hover:underline cursor-pointer">
-                      Terms & Conditions
+                      {t("register.form.termsLink")}
                     </span>
                   </label>
                 </div>
-                {errors.terms && (
-                  <p className="text-red-400 text-xs mt-1">
-                    {errors.terms}
-                  </p>
-                )}
+                {errors.terms && <p className="text-red-400 text-xs mt-1">{errors.terms}</p>}
               </div>
 
-
-              {/* ✅ Submit Button */}
+              {/* Submit */}
               <div className="col-span-1 sm:col-span-2 flex justify-center mt-4">
                 <button
                   type="submit"
-                  className={`w-full sm:w-1/2 ${theme.buttonColor} text-white font-semibold py-3 sm:py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-${isLabour ? "blue" : "purple"
-                    }-500/40 `}
+                  className={`w-full sm:w-1/2 ${theme.buttonColor} text-white font-semibold py-3 sm:py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-${isLabour ? "blue" : "purple"}-500/40`}
                 >
-                  <span>Send OTP</span>
+                  <span>{t("register.form.sendOtp")}</span>
                   <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
             </form>
-
           </div>
           <TermsandCondition open={showTerms} onClose={() => setShowTerms(false)} />
         </>
