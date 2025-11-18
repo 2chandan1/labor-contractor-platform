@@ -1,6 +1,10 @@
 {
   "header": {
-    "helpline": "📢 For complaints or queries, contact our helpline at <strong>1800 1080</strong> — available 24/7 for your assistance."
+    "aboutUs": "About Us",
+    "contactSupport": "Contact Support",
+    "helpline": "📢 For complaints or queries, contact our helpline at <strong>1800 1080</strong> — available 24/7 for your assistance.",
+    "login": "Login",
+    "logout": "Logout"
   },
   "home": {
     "tagline":"Empowering India’s Workforce",

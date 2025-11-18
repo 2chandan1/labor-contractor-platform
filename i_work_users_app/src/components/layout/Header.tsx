@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "../../components/ui/button";
 import { cn } from "../../lib/utils";
-import { Menu, Phone, X } from "lucide-react";
+import { ChevronDown, Menu, Phone, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { STORAGE_KEYS } from "../../utils/constants";
 import {Trans, useTranslation} from 'react-i18next';
@@ -13,6 +13,7 @@ interface HeaderProps {
 type AppLanguage = "en" | "hi" | "mr" | "tm" | "bn"| "kn" |"ta";
 
 const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
+  const [langOpen, setLangOpen]=useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn]=useState(false);
    const {t}=useTranslation();
@@ -95,10 +96,10 @@ const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
           <nav className="hidden md:flex items-center gap-6">
 
             <button className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
-              About Us
+               {t("header.aboutUs")}
             </button>
             <button className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
-              Contact Support
+              {t("header.contactSupport")}
             </button>
             <a href="tel:18001080" className="inline-flex">
               <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-1.5 rounded-full shadow-md cursor-pointer select-none">
@@ -111,43 +112,42 @@ const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
               </div>
             </a>
           </nav>
-          <div className="relative group">
-            <button className="flex items-center gap-1 text-gray-300 hover:text-white transition text-sm font-medium">
+         <div className="relative">
+            <button
+              onClick={() => setLangOpen(!langOpen)}
+              className="flex items-center gap-1 text-gray-300 hover:text-white transition text-sm font-medium"
+            >
               🌐 {LANGUAGES[i18n.language as AppLanguage]}
-              <svg
-                className="w-4 h-4 transition-transform group-hover:rotate-180"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
+              <ChevronDown
+                className={cn(
+                  "w-4 h-4 transition-transform duration-200",
+                  langOpen && "rotate-180"
+                )}
+              />
             </button>
 
-            <div className="
-              absolute right-0 mt-2 w-32 
-              bg-[#0A0F1C]/95 backdrop-blur-xl
-              border border-white/10 rounded-xl shadow-lg 
-              opacity-0 scale-95 translate-y-1 
-              group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 
-              transition-all duration-200 
-              z-50
-              ">
+            <div
+              className={`
+                absolute right-0 mt-2 w-32 bg-[#0A0F1C]/95 backdrop-blur-xl 
+                border border-white/10 rounded-xl shadow-lg z-50 transition-all duration-200
+                ${langOpen ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-1 pointer-events-none"}
+              `}
+            >
               {Object.entries(LANGUAGES).map(([code, label]) => (
                 <button
                   key={code}
-                  onClick={() => i18n.changeLanguage(code)}
+                  onClick={() => {
+                    i18n.changeLanguage(code);
+                    setLangOpen(false); 
+                  }}
                   className={`
-                    w-full text-left px-4 py-2 text-sm rounded-lg
-                    hover:bg-white/10 transition
+                    w-full text-left px-4 py-2 text-sm rounded-lg hover:bg-white/10 transition
                     ${i18n.language === code ? "text-orange-400 font-semibold" : "text-gray-300"}
                   `}
                 >
                   {label}
                 </button>
               ))}
-                
             </div>
           </div>
           {!isLoggedIn ? (
@@ -155,12 +155,12 @@ const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
               onClick={handleLogin}
               className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold px-4 sm:px-5 py-2 rounded-xl shadow-md hover:shadow-blue-500/30 transition-all"
             >
-              Login
+               {t("header.login")}
             </Button>
             ):(
               <div className="flex items-center gap-3">
                 <Button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl">
-                Logout
+                 {t("header.logout")}
                 </Button>
               </div>
             )}
