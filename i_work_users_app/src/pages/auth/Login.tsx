@@ -4,14 +4,17 @@ import { z } from "zod";
 import { useAuthForm } from '../../hooks/useAuth';
 import OTPVerification from '../../components/auth/OtpVerification';
 import { useState } from 'react';
-const mobileSchema = z.object({
-  mobile: z
-    .string()
-    .regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
-});
+import { useTranslation } from 'react-i18next';
+
 const initialFormData = { mobile: "" };
 
 export function Login() {
+  const { t } = useTranslation();
+  const mobileSchema = z.object({
+  mobile: z
+    .string()
+    .regex(/^[6-9]\d{9}$/, t("login.validation.invalidMobile")),
+  });
   const {
     formData,
     errors,
@@ -23,6 +26,7 @@ export function Login() {
     validationSchema: mobileSchema,
     isLogin: true,
   });
+  
   const navigate = useNavigate();
   const [showOtp, setShowOtp] = useState(false);
   const handleSubmit = async () => {
@@ -54,10 +58,10 @@ export function Login() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="sm:text-3xl text-xl font-bold text-white mb-2 tracking-wide">
-            Welcome Back
+           { t("login.welcome")}
           </h1>
           <p className="text-gray-400 text-sm">
-            Enter your mobile number to continue
+           { t("login.enterMobile")}
           </p>
         </div>
         <div className="mb-6">
@@ -91,21 +95,21 @@ export function Login() {
             ${ "bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-600 hover:shadow-[0_0_20px_5px_rgba(59,130,246,0.4)] text-white"
             }`}
         >
-          <span> Send OTP</span>
+          <span>{ t("login.sendOtp")}</span>
           <ArrowRight className="w-5 h-5" />
         </button>
         {/* Secure Login */}
-        <p className="text-center text-gray-500 text-sm mb-4">Secure Login</p>
+        <p className="text-center text-gray-500 text-sm mb-4">{ t("login.secureLogin")}</p>
 
         {/* Sign Up */}
         <div className="text-center pt-4 border-t border-slate-700">
           <p className="text-gray-400 text-sm">
-            Don’t have an account?{" "}
+           { t("login.signUpPrompt")}?{" "}
             <button
               onClick={() => navigate("/")}
               className="text-blue-400 hover:text-blue-300 font-semibold underline transition-colors"
             >
-              Sign Up
+              { t("login.signUp")}
             </button>
           </p>
       </div>       

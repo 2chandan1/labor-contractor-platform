@@ -1,10 +1,11 @@
 import { Users, Briefcase, Target, HeartHandshake, Globe2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import RoleCard from "./RoleCard";
+import {Trans, useTranslation} from 'react-i18next';
 
 export default function HomePage({ onSelect }) {
   const navigate = useNavigate();
-
+  const {t}=useTranslation();
   const handleSelect = (type) => {
     localStorage.setItem("userType", type);
     onSelect(type);
@@ -13,29 +14,24 @@ export default function HomePage({ onSelect }) {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-      
-      {/* Header */}
-      {/* <AuthHeader
-        title="Welcome to i-Work"
-        subtitle="Connecting Labourers and Contractors Effortlessly"
-        handleLogin={handleLogin}
-      /> */}
-
       {/* Hero Section */}
      <section className="relative w-full flex flex-col justify-center items-center text-center pt-6 pb-16 px-3 sm:px-6 lg:px-8">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2  h-[600px] bg-blue-500/10 blur-[120px] rounded-full -z-10" />
 
         <div className="max-w-4xl mx-auto mb-10">
           <div className="inline-block bg-blue-500/20 text-blue-200 px-4 py-1 rounded-full font-medium text-sm mb-6 border border-blue-400/20">
-            Empowering India’s Workforce
+            {t("home.tagline")} 
           </div>
 
           <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-3 leading-tight">
-            Empowering <span className="text-blue-400">Labourers</span> & <span className="text-purple-400">Contractors</span>
+            <Trans i18nKey="home.hero.heading" components={{
+              blue:<span className="text-blue-400"/>,
+              purple:<span className="text-purple-400"/>
+            }}/>
           </h1>
 
           <p className="text-sm sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Join a new era of digital collaboration — connect, manage projects, and grow your future with i-Work.
+            {t("home.hero.description")}
           </p>
         </div>
 
@@ -43,20 +39,20 @@ export default function HomePage({ onSelect }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 max-w-5xl mx-auto sm:mt-4 ">
           
           <RoleCard
-            title="Labour"
+            title={t("home.roles.labour.title")}
             icon={Users}
             gradient="from-blue-600 to-blue-800"
             border="border-blue-400/20"
-            description="Connect with contractors and grow your career with verified job opportunities."
+            description={t("home.roles.labour.description")}
             onClick={() => handleSelect("labour")}
           />
 
           <RoleCard
-            title="Contractor"
+            title={t("home.roles.contractor.title")}
             icon={Briefcase}
             gradient="from-purple-600 to-purple-800"
             border="border-purple-400/20"
-            description="Post jobs, hire trusted labourers, and manage projects easily from one dashboard."
+            description={t("home.roles.contractor.description")}
             onClick={() => handleSelect("contractor")}
           />
 
@@ -71,16 +67,17 @@ export default function HomePage({ onSelect }) {
           </h2>
 
           <p className="text-slate-300 sm:text-lg text-sm max-w-3xl mx-auto mb-10 leading-relaxed">
-            i-Work bridges the gap between contractors and skilled labourers — making collaboration effortless, transparent, and fair for everyone.
+           {t("home.about.description")}
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <FeatureCard icon={Target} title="Our Mission" text="Empower workers and contractors through technology-driven solutions." />
-            <FeatureCard icon={HeartHandshake} title="Our Values" text="Transparency, trust, and growth for every individual." />
-            <FeatureCard icon={Globe2} title="Our Vision" text="Build a unified network of skilled professionals worldwide." />
+            <FeatureCard icon={Target} title={t("home.about.mission")} text={t("home.about.missionText")} />
+            <FeatureCard icon={HeartHandshake} title={t("home.about.values")}text={t("home.about.valuesText")} />
+            <FeatureCard icon={Globe2} title={t("home.about.vision")} text={t("home.about.visionText")} />
           </div>
         </div>
       </section>
+
     </div>
   );
 }

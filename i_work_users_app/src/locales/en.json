@@ -1,0 +1,96 @@
+{
+  "header": {
+    "helpline": "📢 For complaints or queries, contact our helpline at <strong>1800 1080</strong> — available 24/7 for your assistance."
+  },
+  "home": {
+    "tagline":"Empowering India’s Workforce",
+    "hero": {
+      "heading": "Empowering <blue>Labourers</blue> & <purple>Contractors</purple>",
+      "description": "Join a new era of digital collaboration — connect, manage projects, and grow your future with i-Work."
+    },
+    "roles": {
+      "labour": {
+        "title": "Labour",
+        "description": "Connect with contractors and grow your career with verified job opportunities."
+      },
+      "contractor": {
+        "title": "Contractor",
+        "description": "Post jobs, hire trusted labourers, and manage projects easily from one dashboard."
+      }
+    },
+    "about": {
+      "heading": "About i-Work",
+      "iwork": "i-Work",
+      "description": "i-Work bridges the gap between contractors and skilled labourers — making collaboration effortless, transparent, and fair for everyone.",
+      "mission": "Our Mission",
+      "values": "Our Values",
+      "vision": "Our Vision",
+      
+       "missionText": "Empower workers and contractors through technology-driven solutions.",
+      "valuesText": "Transparency, trust, and growth for every individual.",
+      "visionText": "Build a unified network of skilled professionals worldwide."
+    },
+    "callToAction": {
+      "selectRole": "Select your role to get started"
+    }
+  },
+  "login": {
+    "welcome": "Welcome Back",
+    "enterMobile": "Enter your mobile number to continue",
+    "mobilePrefix": "+91",
+    "sendOtp": "Send OTP",
+    "secureLogin": "Secure Login",
+    "signUpPrompt": "Don’t have an account",
+    "signUp": "Sign Up",
+    "validation": {
+      "invalidMobile": "Enter a valid 10-digit mobile number"
+    }
+  },
+  "register": {
+    "back": "Back",
+    "joinAs": "Join as {{role}}",
+    "joinAsLabour": "Join as Labour",
+    "joinAsContractor": "Join as Contractor",
+    "subtitle": "Create your profile and start connecting instantly",
+    "form": {
+      "fullName": "Full Name",
+      "age": "Age",
+      "gender": "Gender",
+      "genderPlaceholder": "Select Gender",
+      "genderMale": "Male",
+      "genderFemale": "Female",
+      "genderOther": "Other",
+
+      "experience": "Experience",
+      "mobile": "Mobile Number",
+      "mobilePlaceholder": "Enter mobile number",
+
+      "address": "Address",
+      "addressPlaceholder": "Street, Building...",
+
+      "city": "City",
+      "cityPlaceholder": "City",
+
+      "aadhaar": "Aadhaar Card",
+      "aadhaarUploadButton": "Upload Image",
+
+      "termsPrefix": "I agree to the",
+      "termsLink": "Terms & Conditions",
+
+      "sendOtp": "Send OTP"
+    },
+
+    "validation": {
+      "fullNameMin": "Full name must be at least 3 characters",
+      "ageRequired": "Age is required",
+      "ageRange": "Age must be between 18 and 60",
+      "genderRequired": "Please select gender",
+      "experienceRequired": "Experience is required",
+      "invalidMobile": "Enter a valid 10-digit mobile number",
+      "aadhaarRequired": "Please upload your Aadhaar card image",
+      "addressRequired": "Address is required",
+      "cityRequired": "City is required",
+      "termsRequired": "Please agree to the Terms & Conditions"
+    }
+  }
+}
