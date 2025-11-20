@@ -35,6 +35,6 @@
     "resolveJsonModule": true
 
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "utils"],
   "exclude": ["node_modules", "dist"]  // Added dist to exclude
 }

@@ -26,6 +26,16 @@ const UserSchema = new Schema<IUser>(
     },
     lastLogin: {
       type: Date
+    },
+    isSubscribed: {
+      type: Boolean,
+      default: false
+    },
+    subscription: {
+      plan: { type: String },              
+      startDate: { type: Date },       
+      endDate: { type: Date },             
+      razorpayPaymentId: { type: String } 
     }
   },
   {
