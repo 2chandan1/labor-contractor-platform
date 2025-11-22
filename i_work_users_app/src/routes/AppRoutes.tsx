@@ -10,6 +10,7 @@ import { Register } from "../pages/auth/Register";
 import EmployerDashboard from "../pages/employer/index";
 import EmployeeDashboard from "../pages/employee/Index";
 import NotFound from "../pages/NotFound";
+import { SubscriptionPage } from "../pages/SubscriptionPage.";
 
 export default function AppRoutes() {
   const [selectedUserType, setSelectedUserType] = useState<string | null>(null);
@@ -55,9 +56,9 @@ export default function AppRoutes() {
          
         />
          <Route
-          path="/labour"
+          path="/subscription"
           element={
-            <EmployeeDashboard 
+            <SubscriptionPage 
               // onBack={handleBack}
             />
           }
