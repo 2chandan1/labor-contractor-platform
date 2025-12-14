@@ -11,6 +11,8 @@ import EmployerDashboard from "../pages/employer/index";
 import EmployeeDashboard from "../pages/employee/Index";
 import NotFound from "../pages/NotFound";
 import { SubscriptionPage } from "../pages/SubscriptionPage.";
+import ContractorPage from "../components/ContractorPage";
+import LaborerPage from "../components/LaborerPage";
 
 export default function AppRoutes() {
   const [selectedUserType, setSelectedUserType] = useState<string | null>(null);
@@ -49,9 +51,9 @@ export default function AppRoutes() {
          <Route
           path="/contractor"
           element={
-            <EmployerDashboard 
+            <LaborerPage/> 
               // onBack={handleBack}
-            />
+            
           }
          
         />
